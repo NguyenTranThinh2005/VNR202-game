@@ -1,0 +1,81 @@
+BẮN BÓNG LỊCH SỬ · HƯỚNG DẪN
+============================
+
+CÁCH CHƠI (một ván khoảng 8 phút với 20 câu)
+  Rê chuột (hoặc kéo ngón tay) để ngắm, súng tự bắn đều liên tục (1,5 viên/giây lúc đầu).
+  LÀN ĐƯỜNG: câu 1-5 có 4 thùng đáp án, câu 6-15 có 5, câu 16-20 có 6. Mỗi lần mở rộng,
+    bay vào thêm 1 chiếc B-52 (chặng 4 ô có 1 chiếc, 5 ô có 2, 6 ô có 3) và camera lùi ra.
+    Các máy bay lượn qua lại nhưng luôn giữ nguyên độ cao, không tiến xuống gần người chơi. Sửa ở CONFIG.lanes.
+    Câu ở chặng 4 ô: nếu có 5 đáp án thì game tự bỏ bớt 1 đáp án sai ngẫu nhiên.
+    Câu ở chặng 6 ô: nên ghi đủ 6 đáp án (thiếu thì ô đó thành thùng rỗng).
+  Mỗi câu hỏi là một hàng thùng hàng viện trợ thả dù (mỗi thùng một đáp án), bắn vỡ được ngay khi hiện ra.
+  Bắn vỡ thùng ĐÚNG: thùng bung ra từng mảnh gỗ, các thùng còn lại đứt dù rơi nhanh xuống (không mất máu),
+    mở đường bắn kẻ địch trong 11 giây. Đạn phải chạm đúng thân/cánh máy bay mới tính trúng
+    (vùng trúng di chuyển theo máy bay); bay vào khoảng trống thì nảy lại từ khung câu hỏi.
+    Phá hết khúc máu của câu thì còn 2 giây bắn thêm lấy điểm rồi sang câu mới (sửa ở afterBreak).
+    Không hiện số sát thương trên máy bay cho đỡ rối mắt. Hết câu, bom còn trên trời tự nổ, không mất máu.
+  Bắn hạ thùng SAI: thùng đứt dù rơi xuống đè nhân vật, mất 1 mạng.
+  Hàng thùng chạm vạch đỏ: B-52 thả 1 quả bom nhanh vào nhân vật, rồi sang câu tiếp.
+  BOSS PHẢN CÔNG: boss là phi đội B-52, cứ vài giây mở khoang thả bom (từ câu 8 thả 2 quả,
+    từ câu 15 thả 3 quả, chia cho các máy bay;
+    sửa ở fireball2From, fireball3From). Mỗi quả bom phải bắn trúng 3 lần mới nổ (3 chấm đỏ trên bom
+    cho biết còn mấy phát; sửa ở bombHp). Chặn được thì có điểm,
+    để chạm vào là mất 1 mạng. Càng về sau thả càng dày; lúc đang tấn công boss thả thưa hơn.
+    B-52 càng mất máu thì động cơ càng bốc khói, rồi bốc cháy.
+  VIỆN TRỢ (dừng game, chọn 1 trong 3 thẻ):
+    - Trả lời đúng CÂU THƯỞNG (câu 5, 11, 17; có nhãn "★ Thưởng" trên câu hỏi).
+    - Lần đầu đạt chuỗi 3 và chuỗi 5 câu đúng liên tiếp.
+    Luôn có Tăng tốc độ bắn (dùng hết thì thay bằng Liên thanh) và Hồi máu (+1 mạng); thẻ thứ ba ngẫu nhiên:
+    Liên thanh (bắn nhanh gấp đôi), Đạn lửa (×2 sát thương, đốt địch), Đạn to, Khiên.
+  CHUỖI ĐÚNG: đúng liên tiếp thì điểm được nhân (cứ 2 câu +0.5, tối đa ×3). Sai thì về ×1.
+  CÂU CUỐI: B-52 dốc toàn lực, thùng rơi nhanh hơn, thả bom dày hơn, nhưng mọi điểm nhân 2.
+  Có 5 mạng. Hết câu mà kẻ địch hết máu là thắng. Hết mạng là thua.
+  Máy tính: có thể dùng mũi tên trái/phải để ngắm.
+  ÂM THANH: nhạc nền căng dần theo số máy bay (nhanh nhất ở câu cuối), tiếng động cơ, tiếng bom rít khi thả.
+    Nút ♪ để tắt/bật. Chỉnh âm lượng ở CONFIG.musicVolume và CONFIG.engineVolume (0 = tắt).
+
+  Muốn ván dài/ngắn hơn: sửa attackTime (giây tấn công mỗi câu) trong CONFIG, hoặc thêm/bớt câu hỏi.
+  Câu thưởng sửa ở UPGRADE_QUESTIONS, mốc chuỗi ở UPGRADE_AT.
+
+TRƯỚC BUỔI THUYẾT TRÌNH
+  1. Mở public/index.html bằng Notepad hoặc VS Code.
+  2. Tìm "SỬA CÂU HỎI Ở ĐÂY", thay các câu mẫu bằng câu thật.
+     Mỗi câu: q là câu hỏi, a là các đáp án (4-6, xem LÀN ĐƯỜNG), correct là vị trí đáp án đúng (đếm từ 0).
+     Đáp án nên ngắn (dưới khoảng 30 ký tự), chữ dài quá sẽ tự thu nhỏ.
+  3. Tìm  testAnswers: true  và đổi thành  false
+     (đang bật để chơi thử: ô đúng ghi "Đúng", ô sai ghi "Sai").
+  Các con số khác (số mạng, số đạn, tốc độ rơi, máu địch, điểm) nằm ngay dưới, trong CONFIG và SCORING.
+
+CHỌN MỘT TRONG HAI CÁCH CHẠY
+
+A. ĐƯA LÊN VERCEL (khuyên dùng: cả lớp vào bằng 4G/Wi-Fi nào cũng được)
+  1. Tạo repo mới trên GitHub, tải toàn bộ thư mục này lên (giữ nguyên public/, api/,
+     vercel.json, package.json).
+  2. Vào vercel.com > Add New > Project > chọn repo > Deploy (để Framework là "Other").
+  3. Lưu điểm cho màn admin: trong project, tab Storage > Create Database > Upstash Redis
+     (gói Free) > Connect tới project > tab Deployments > Redeploy.
+  4. Nên đặt mật khẩu cho nút "Xóa dữ liệu": Settings > Environment Variables >
+     ADMIN_KEY = mật khẩu > Redeploy.
+  Link chơi:  https://TEN-CUA-BAN.vercel.app
+  Màn admin:  https://TEN-CUA-BAN.vercel.app/admin
+  Mỗi lần sửa câu hỏi, đẩy lại lên GitHub là Vercel tự cập nhật, link giữ nguyên.
+
+B. CHẠY TRÊN LAPTOP (không cần Internet, cả lớp dùng chung Wi-Fi với laptop)
+  1. Cài Node.js bản LTS tại https://nodejs.org (hoặc có sẵn Python 3).
+  2. Windows: bấm đúp chay-game-windows.bat. macOS: chuột phải chay-game-mac.command > Open.
+  3. Cửa sổ server in ra địa chỉ "Người chơi mở" và "Màn admin". Giữ cửa sổ mở suốt buổi.
+  Wi-Fi trường hay chặn các máy nói chuyện với nhau: khi đó bật hotspot trên điện thoại/laptop
+  cho cả lớp và laptop cùng vào, rồi chạy lại server.
+
+MÀN ADMIN
+  Hiện từng người: câu đang làm, mạng còn lại, điểm hiện tại, điểm cao nhất, số lần chơi.
+  Tự cập nhật mỗi 2 giây. Bấm "Xóa dữ liệu" trước buổi thật để xóa lượt chơi thử.
+
+CÁCH TÍNH ĐIỂM
+  Mỗi câu đúng 300, cộng thưởng nhanh tối đa 200 (giảm dần về 0 sau 20 giây).
+  Mỗi phát trúng máy bay 5. Các điểm trên đều nhân hệ số chuỗi.
+  Hạ được kẻ địch 1000. Mỗi mạng còn lại 200. Đúng hết không sai câu nào thêm 1500.
+  Mỗi câu đúng chỉ phá được tối đa một khúc máu của địch (vạch vàng trên thanh máu),
+  nên ai làm sai câu trước vẫn gỡ lại được ở câu sau, và địch không chết trước câu cuối.
+
+Mở thẳng public/index.html bằng trình duyệt cũng chơi được, chỉ là không lưu điểm lên admin.
