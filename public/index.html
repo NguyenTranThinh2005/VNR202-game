@@ -383,54 +383,92 @@ function updateHum() {
   } catch (e) {}
 }
 let NOISE = null;
-/* Nhạc nền căng thẳng (tự tổng hợp, không cần file): giọng La thứ, vòng hợp âm Am - Bb - Am - E.
-   Cấp 1 (1 máy bay): trống trận thưa, bass nhịp đen. Cấp 2 (2 máy bay): nhanh hơn, bass móc đơn, thêm trống lẫy.
-   Cấp 3 (3 máy bay hoặc câu cuối): nhanh nhất, thêm hi-hat và tiếng dây rung dồn dập. */
+/* Nhạc nền chủ đề chiến tranh (tự tổng hợp, không cần file): Rê thứ, vòng Dm - Bb - Gm - A.
+   Nhạc cụ giả lập: trống định âm, trống lẫy hành quân, dàn dây/kèn đồng trầm, kèn trumpet hiệu lệnh.
+   Cấp 1 (1 máy bay): u ám, chậm: dàn dây ngân, trống định âm thưa, trống lẫy lác đác, kèn trầm giữ nốt.
+   Cấp 2 (2 máy bay): nhịp hành quân: trống lẫy đều, dây trầm móc đơn dồn dập, kèn hiệu lệnh vang giai điệu.
+   Cấp 3 (3 máy bay hoặc câu cuối): xung trận: nhanh nhất, dây móc kép, kèn hai bè, chũm chọe, trống định âm vê. */
 let MUS = null;
 function getNoise() { if (!NOISE) { NOISE = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); const d = NOISE.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; } return NOISE; }
 const mf = (m) => 440 * Math.pow(2, (m - 69) / 12);
-function mNote(t, m, dur, type, vol, cut) {
+function mNote(t, m, dur, type, vol, cut) { // nốt ngắn (dây trầm bấm ngắt)
   const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(mf(m), t);
-  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
   if (cut) { const f = AC.createBiquadFilter(); f.type = "lowpass"; f.frequency.value = cut; o.connect(f).connect(g); } else o.connect(g);
   g.connect(MUS.out); o.start(t); o.stop(t + dur + 0.02);
 }
-function mNoise(t, dur, vol, hp) {
+function mPad(t, notes, dur, vol) { // dàn dây + kèn đồng trầm ngân dài, vào chậm
+  const f = AC.createBiquadFilter(), g = AC.createGain(); f.type = "lowpass"; f.frequency.value = 1100; f.Q.value = 0.5;
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(vol, t + Math.min(0.45, dur * 0.3)); g.gain.setValueAtTime(vol, t + dur * 0.75); g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.25);
+  f.connect(g).connect(MUS.out);
+  for (const m of notes) for (const dt of [-7, 7]) { const o = AC.createOscillator(); o.type = "sawtooth"; o.frequency.value = mf(m); o.detune.value = dt; o.connect(f); o.start(t); o.stop(t + dur + 0.3); }
+}
+function mHorn(t, m, dur, vol) { // kèn hiệu lệnh: âm sáng dần khi thổi, rung nhẹ khi ngân
+  const o = AC.createOscillator(), o2 = AC.createOscillator(), f = AC.createBiquadFilter(), g = AC.createGain(), lfo = AC.createOscillator(), lg = AC.createGain();
+  o.type = "sawtooth"; o2.type = "square"; o.frequency.value = mf(m); o2.frequency.value = mf(m - 12); o2.detune.value = 4;
+  lfo.frequency.value = 5.2; lg.gain.setValueAtTime(0, t); lg.gain.linearRampToValueAtTime(5, t + Math.min(0.35, dur)); lfo.connect(lg); lg.connect(o.detune); lg.connect(o2.detune);
+  f.type = "lowpass"; f.Q.value = 1.2; f.frequency.setValueAtTime(500, t); f.frequency.exponentialRampToValueAtTime(1900, t + 0.07); f.frequency.exponentialRampToValueAtTime(1300, t + 0.3);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.045); g.gain.setValueAtTime(vol * 0.85, t + Math.max(0.06, dur - 0.08)); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.12);
+  o.connect(f); o2.connect(f); f.connect(g).connect(MUS.out);
+  for (const x of [o, o2, lfo]) { x.start(t); x.stop(t + dur + 0.15); }
+}
+function mSnare(t, vol) { // trống lẫy: tiếng dây lò xo + mặt trống
   const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
-  s.buffer = getNoise(); f.type = "highpass"; f.frequency.value = hp;
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-  s.connect(f).connect(g).connect(MUS.out); s.start(t, Math.random() * 0.5); s.stop(t + dur + 0.02);
+  s.buffer = getNoise(); f.type = "bandpass"; f.frequency.value = 2200; f.Q.value = 0.7;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+  s.connect(f).connect(g).connect(MUS.out); s.start(t, Math.random() * 0.5); s.stop(t + 0.15);
+  const o = AC.createOscillator(), og = AC.createGain(); o.type = "triangle"; o.frequency.setValueAtTime(210, t); o.frequency.exponentialRampToValueAtTime(150, t + 0.05);
+  og.gain.setValueAtTime(vol * 0.6, t); og.gain.exponentialRampToValueAtTime(0.0001, t + 0.07); o.connect(og).connect(MUS.out); o.start(t); o.stop(t + 0.08);
 }
-function mKick(t, vol) {
+function mTimp(t, m, vol) { // trống định âm
   const o = AC.createOscillator(), g = AC.createGain(); o.type = "sine";
-  o.frequency.setValueAtTime(130, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.16);
-  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.28);
-  o.connect(g).connect(MUS.out); o.start(t); o.stop(t + 0.3);
+  o.frequency.setValueAtTime(mf(m) * 1.06, t); o.frequency.exponentialRampToValueAtTime(mf(m), t + 0.08);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+  o.connect(g).connect(MUS.out); o.start(t); o.stop(t + 1.15);
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), ng = AC.createGain(); s.buffer = getNoise(); f.type = "lowpass"; f.frequency.value = 400;
+  ng.gain.setValueAtTime(vol * 0.8, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.12); s.connect(f).connect(ng).connect(MUS.out); s.start(t, Math.random() * 0.5); s.stop(t + 0.14);
 }
-const CHORDS = [[45, 0, 3, 7], [46, 0, 4, 7], [45, 0, 3, 7], [40, 0, 4, 7]]; // gốc (MIDI) + quãng
+function mCrash(t, vol) { // chũm chọe
+  const s = AC.createBufferSource(), f = AC.createBiquadFilter(), g = AC.createGain();
+  s.buffer = getNoise(); f.type = "highpass"; f.frequency.value = 5000;
+  g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.6);
+  s.connect(f).connect(g).connect(MUS.out); s.start(t); s.stop(t + 1.62);
+}
+const CHORDS = [[38, 50, 57, 62, 65], [34, 46, 53, 58, 62], [31, 43, 55, 58, 62], [33, 45, 57, 61, 64]]; // gốc + các nốt dàn dây: Dm, Bb, Gm, A
+// giai điệu kèn 4 ô nhịp: [bước móc kép bắt đầu, nốt MIDI, độ dài tính bằng móc kép]
+const MOTIF = [[0, 62, 6], [6, 65, 2], [8, 69, 6], [14, 67, 2], [16, 65, 6], [22, 62, 2], [24, 70, 8], [32, 67, 6], [38, 65, 2], [40, 62, 6], [46, 58, 2], [48, 61, 6], [54, 64, 2], [56, 69, 8]];
+const MARCH = { // trống lẫy: bước trong ô nhịp -> độ mạnh
+  1: { 4: 0.5, 12: 0.7, 14: 0.25, 15: 0.3 },
+  2: { 0: 0.55, 3: 0.3, 4: 0.75, 6: 0.35, 8: 0.5, 10: 0.3, 11: 0.35, 12: 0.8, 14: 0.35 },
+};
 function updateMusic() {
   if (!MUS) { MUS = { out: AC.createGain(), next: AC.currentTime + 0.1, step: 0 }; MUS.out.gain.value = 0; MUS.out.connect(AC.destination); }
   const on = S && !paused && !S.over && !muted && S.phase !== "dying";
-  MUS.out.gain.setTargetAtTime(on ? CONFIG.musicVolume : 0, AC.currentTime, 0.3);
+  const np = S && S.boss && S.boss.planes ? S.boss.planes.length : 1, lvl = S && S.lastQ ? 3 : Math.min(3, Math.max(1, np));
+  // cấp cao nhiều nhạc cụ hơn nên hạ bớt cho độ to chung giữ nguyên (hiệu ứng vẫn chỉ to hơn nhạc một chút)
+  MUS.out.gain.setTargetAtTime(on ? CONFIG.musicVolume * 0.5 * [1, 1, 0.74, 0.69][lvl] : 0, AC.currentTime, 0.3);
   if (!on) { MUS.next = AC.currentTime + 0.1; return; }
-  const np = S.boss && S.boss.planes ? S.boss.planes.length : 1, lvl = S.lastQ ? 3 : Math.min(3, Math.max(1, np));
-  const bpm = [0, 96, 110, 124][lvl] + (S.lastQ ? 8 : 0), dt16 = 60 / bpm / 4;
+  const bpm = [0, 84, 100, 116][lvl] + (S.lastQ ? 8 : 0), dt16 = 60 / bpm / 4;
   while (MUS.next < AC.currentTime + 0.15) {
-    const t = MUS.next, st = MUS.step % 16, bar = Math.floor(MUS.step / 16) % 4, [root, ...iv] = CHORDS[bar];
-    // trống
-    if (st === 0 || st === 8 || (lvl >= 2 && st === 10) || (lvl >= 3 && (st === 3 || st === 11))) mKick(t, 0.9);
-    if (lvl === 1 && st === 12) mNote(t, 38, 0.25, "triangle", 0.35);
-    if (lvl >= 2 && (st === 4 || st === 12)) { mNoise(t, 0.13, 0.32, 1500); mNote(t, 50, 0.08, "triangle", 0.18); }
-    if (lvl >= 2 && st === 15 && bar === 3) mNoise(t, 0.08, 0.25, 1500);
-    if (lvl >= 3 && st % 2 === 0) mNoise(t, 0.03, st % 4 ? 0.07 : 0.12, 7000);
-    // bass
-    const bassOn = lvl === 1 ? st % 4 === 0 : lvl === 2 ? st % 2 === 0 : (st % 2 === 0 || st === 15);
-    if (bassOn) mNote(t, root + ((lvl >= 2 && (st === 6 || st === 14)) ? 12 : 0), dt16 * (lvl === 1 ? 3 : 1.6), "sawtooth", 0.32, 520);
-    // hợp âm rải phía trên
-    if ([0, 3, 6, 10].includes(st)) mNote(t, root + 24 + iv[[0, 1, 2, 1][[0, 3, 6, 10].indexOf(st)]], dt16 * 2.5, "square", 0.05, 2400);
-    // dây rung dồn dập ở cấp 3, nhịp đảo ở cấp 2
-    if (lvl >= 3) mNote(t, root + 36 + (st % 4 === 2 ? iv[1] : 0), dt16 * 0.8, "sawtooth", 0.035, 3200);
-    else if (lvl === 2 && st % 4 === 2) mNote(t, root + 31, dt16 * 0.9, "sawtooth", 0.035, 2800);
+    const t = MUS.next, st = MUS.step % 16, st64 = MUS.step % 64, bar = Math.floor(st64 / 16), ch = CHORDS[bar], root = ch[0];
+    // dàn dây ngân cả ô nhịp
+    if (st === 0) mPad(t, ch.slice(1), dt16 * 16, lvl === 1 ? 0.05 : 0.04);
+    // trống định âm
+    if (st === 0 || (lvl >= 2 && st === 8) || (lvl === 1 && bar === 3 && st === 8)) mTimp(t, root + 12, st === 0 ? 0.9 : 0.6);
+    if (lvl >= 3 && bar === 3 && st >= 12) mTimp(t, root + 12, 0.35 + (st - 12) * 0.1);
+    // trống lẫy hành quân
+    if (lvl >= 3) mSnare(t, (st === 4 || st === 12 ? 0.8 : st % 2 ? 0.18 : 0.32) * (bar === 3 && st >= 12 ? 1.3 : 1));
+    else { const v = MARCH[lvl][st]; if (v && (lvl === 2 || bar % 2 === 1 || st === 12)) mSnare(t, v); }
+    if (lvl >= 3 && st === 0 && bar === 0) mCrash(t, 0.22);
+    // dây trầm bấm ngắt
+    if (lvl === 1) { if (st === 0 || st === 10) mNote(t, root + 12, dt16 * 6, "sawtooth", 0.22, 600); }
+    else if (lvl === 2 ? st % 2 === 0 : true) mNote(t, root + 12 + ((st === 6 || st === 14) ? 7 : 0), dt16 * (lvl === 2 ? 1.5 : 0.9), "sawtooth", lvl === 2 ? 0.2 : 0.17, 900);
+    // kèn
+    if (lvl === 1) { if (st === 0 && bar % 2 === 0) mHorn(t, root + 24, dt16 * 14, 0.07); }
+    else for (const [s0, m, len] of MOTIF) if (s0 === st64) {
+      mHorn(t, m + (lvl >= 3 ? 12 : 0), dt16 * len * 0.92, lvl >= 3 ? 0.07 : 0.085);
+      if (lvl >= 3) mHorn(t, m + 7, dt16 * len * 0.92, 0.05); // bè dưới cách một quãng bốn
+    }
     MUS.next += dt16; MUS.step++;
   }
 }
