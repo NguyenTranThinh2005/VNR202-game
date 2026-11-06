@@ -1,12 +1,12 @@
-BẮN BÓNG LỊCH SỬ · HƯỚNG DẪN
+LƯỚI LỬA TRI THỨC · HƯỚNG DẪN
 ============================
 
 CÁCH CHƠI (một ván khoảng 8 phút với 20 câu)
   Rê chuột (hoặc kéo ngón tay) để ngắm, súng tự bắn đều liên tục (1,5 viên/giây lúc đầu).
-  LÀN ĐƯỜNG: câu 1-5 có 4 thùng đáp án, câu 6-15 có 5, câu 16-20 có 6. Mỗi lần mở rộng,
-    bay vào thêm 1 chiếc B-52 (chặng 4 ô có 1 chiếc, 5 ô có 2, 6 ô có 3) và camera lùi ra.
+  LÀN ĐƯỜNG: câu 1-5 có 4 thùng đáp án (1 máy bay), câu 6-15 có 4 thùng TO hơn cho đáp án dài
+    (2 máy bay), câu 16-20 có 6 thùng (3 máy bay). Mỗi lần mở rộng camera lùi ra.
     Các máy bay lượn qua lại nhưng luôn giữ nguyên độ cao, không tiến xuống gần người chơi. Sửa ở CONFIG.lanes.
-    Câu ở chặng 4 ô: nếu có 5 đáp án thì game tự bỏ bớt 1 đáp án sai ngẫu nhiên.
+    Chặng 2 dùng thùng rộng và cao hơn (w: 5, h: 104 trong CONFIG.lanes) nên đáp án dài đến ~50 ký tự vẫn vừa.
     Câu ở chặng 6 ô: nên ghi đủ 6 đáp án (thiếu thì ô đó thành thùng rỗng).
   Mỗi câu hỏi là một hàng thùng hàng viện trợ thả dù (mỗi thùng một đáp án), bắn vỡ được ngay khi hiện ra.
   Bắn vỡ thùng ĐÚNG: thùng bung ra từng mảnh gỗ, các thùng còn lại đứt dù rơi nhanh xuống (không mất máu),
@@ -39,11 +39,10 @@ CÁCH CHƠI (một ván khoảng 8 phút với 20 câu)
 
 TRƯỚC BUỔI THUYẾT TRÌNH
   1. Mở public/index.html bằng Notepad hoặc VS Code.
-  2. Tìm "SỬA CÂU HỎI Ở ĐÂY", thay các câu mẫu bằng câu thật.
-     Mỗi câu: q là câu hỏi, a là các đáp án (4-6, xem LÀN ĐƯỜNG), correct là vị trí đáp án đúng (đếm từ 0).
-     Đáp án nên ngắn (dưới khoảng 30 ký tự), chữ dài quá sẽ tự thu nhỏ.
-  3. Tìm  testAnswers: true  và đổi thành  false
-     (đang bật để chơi thử: ô đúng ghi "Đúng", ô sai ghi "Sai").
+  ĐÃ XONG: 20 câu thật về Đại hội V (1982-1986) đã nằm ở "SỬA CÂU HỎI Ở ĐÂY", chế độ thử đã TẮT.
+  Muốn sửa câu: q là câu hỏi, a là các đáp án, correct là vị trí đáp án đúng (đếm từ 0; hiện tất cả là 0,
+     game tự xáo vị trí thùng). Câu dài đặt ở câu 6-15. Câu 16-20 cần 6 đáp án.
+  Muốn chơi thử thấy ngay ô Đúng/Sai: đổi  testAnswers: false  thành  true  (nhớ đổi lại).
   Các con số khác (số mạng, số đạn, tốc độ rơi, máu địch, điểm) nằm ngay dưới, trong CONFIG và SCORING.
 
 CHỌN MỘT TRONG HAI CÁCH CHẠY
@@ -51,7 +50,8 @@ CHỌN MỘT TRONG HAI CÁCH CHẠY
 A. ĐƯA LÊN VERCEL (khuyên dùng: cả lớp vào bằng 4G/Wi-Fi nào cũng được)
   1. Tạo repo mới trên GitHub, tải toàn bộ thư mục này lên (giữ nguyên public/, api/,
      vercel.json, package.json).
-  2. Vào vercel.com > Add New > Project > chọn repo > Deploy (để Framework là "Other").
+  2. Vào vercel.com > Add New > Project > chọn repo > Application Preset chọn "Other" > Deploy.
+     (vercel.json đã chỉ sẵn thư mục public là trang web, không cần chỉnh Build/Output.)
   3. Lưu điểm cho màn admin: trong project, tab Storage > Create Database > Upstash Redis
      (gói Free) > Connect tới project > tab Deployments > Redeploy.
   4. Nên đặt mật khẩu cho nút "Xóa dữ liệu": Settings > Environment Variables >

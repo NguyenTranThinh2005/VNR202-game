@@ -1,4 +1,4 @@
-# Server dự phòng bằng Python 3 cho "Bắn Bóng Lịch Sử" (dùng khi máy không có Node.js).
+# Server dự phòng bằng Python 3 cho "Lưới Lửa Tri Thức" (dùng khi máy không có Node.js).
 # Chạy: python server.py   (đổi cổng: python server.py 8080)
 import json, os, socket, sys, threading, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
@@ -126,7 +126,7 @@ class Handler(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     server = ThreadingHTTPServer(("0.0.0.0", PORT), Handler)
-    print("\n  Bắn Bóng Lịch Sử đang chạy\n")
+    print("\n  Lưới Lửa Tri Thức đang chạy\n")
     for u in lan_urls():
         print(f"  Người chơi mở:  {u}")
         print(f"  Màn admin:      {u}/admin\n")

@@ -1,4 +1,4 @@
-// Server nhỏ cho "Bắn Bóng Lịch Sử": phục vụ game, màn admin và lưu trạng thái người chơi.
+// Server nhỏ cho "Lưới Lửa Tri Thức": phục vụ game, màn admin và lưu trạng thái người chơi.
 // Không cần cài thêm thư viện. Chạy: node server.js   (đổi cổng: PORT=8080 node server.js)
 const http = require("http");
 const fs = require("fs");
@@ -76,7 +76,7 @@ http.createServer((req, res) => {
     send(res, 200, data, "text/html; charset=utf-8");
   });
 }).listen(PORT, "0.0.0.0", () => {
-  console.log("\n  Bắn Bóng Lịch Sử đang chạy\n");
+  console.log("\n  Lưới Lửa Tri Thức đang chạy\n");
   for (const u of lanUrls()) {
     console.log(`  Người chơi mở:  ${u}`);
     console.log(`  Màn admin:      ${u}/admin\n`);
