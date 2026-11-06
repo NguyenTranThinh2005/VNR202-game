@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bảng Xếp Hạng · Lưới Lửa Tri Thức</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800;900&family=Be+Vietnam+Pro:wght@400;600;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 /* Màn admin để trình chiếu: bảng xếp hạng, bấm vào một người chơi để xem trực tiếp màn hình của họ */
 :root {
   --bg: #1C4428; --panel: #285A35; --panel-2: #316C40; --line: #5E9E66;
   --cinnabar: #C8352C; --gold: #E2AE45; --egg: #F3EBD8; --jade: #3F9D6E; --muted: #C4E2C6; --ink: #0B2414;
-  --display: "Alegreya", Georgia, serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
+  --display: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
@@ -20,7 +20,7 @@ html { background: var(--bg); }
 body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #4A9A5C 0%, #2C6B3C 38%, var(--bg) 78%); color: var(--egg); font-family: var(--body); font-size: clamp(15px, 1.2vw, 22px); padding: 20px max(16px, 2.5vw) 32px; }
 header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-bottom: 18px; }
 .eyebrow { font-size: 0.72em; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
-h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 900; font-size: clamp(34px, 3.8vw, 68px); line-height: 1; }
+h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 800; font-size: clamp(34px, 3.8vw, 68px); line-height: 1; }
 .join { display: flex; align-items: center; gap: 16px; background: rgba(28, 68, 40, 0.75); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
 .join .txt { display: grid; gap: 2px; text-align: right; }
 .join span { font-size: 0.8em; color: var(--muted); font-weight: 600; }
@@ -46,7 +46,7 @@ tbody tr { cursor: pointer; transition: background 0.15s; }
 tbody tr:hover { background: rgba(226, 174, 69, 0.1); }
 tr:last-child td { border-bottom: 0; }
 td.num, th.num { text-align: right; }
-.rank { font-family: var(--display); font-weight: 900; font-size: 1.5em; color: var(--muted); width: 2.4em; }
+.rank { font-family: var(--display); font-weight: 800; font-size: 1.5em; color: var(--muted); width: 2.4em; }
 tr.top1 .rank { color: #F2C230; } tr.top2 .rank { color: #D8DEE4; } tr.top3 .rank { color: #D0925A; }
 tr.top1 td { background: rgba(242, 194, 48, 0.08); }
 .who { display: grid; gap: 2px; }
@@ -61,8 +61,8 @@ tr.top1 td { background: rgba(242, 194, 48, 0.08); }
 .badge.lose { background: var(--cinnabar); color: #fff; }
 .hearts { color: #FF5A4E; letter-spacing: 1px; white-space: nowrap; font-size: 1.05em; }
 .hearts s { color: rgba(255, 255, 255, 0.22); text-decoration: none; }
-.score { font-family: var(--display); font-weight: 900; font-size: 1.35em; }
-.best { font-family: var(--display); font-weight: 900; font-size: 1.35em; color: var(--gold); }
+.score { font-family: var(--display); font-weight: 800; font-size: 1.35em; }
+.best { font-family: var(--display); font-weight: 800; font-size: 1.35em; color: var(--gold); }
 .live { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8em; color: var(--muted); white-space: nowrap; }
 .live i { width: 10px; height: 10px; border-radius: 50%; background: #789A7C; flex: none; }
 .live.on i { background: #5BE08A; box-shadow: 0 0 8px #5BE08A; }
@@ -84,9 +84,9 @@ tr.on .watch { border-color: var(--gold); color: var(--gold); }
 .liveTag i { width: 12px; height: 12px; border-radius: 50%; background: #FF4A3D; animation: blink 1.2s infinite; }
 .liveTag.off { color: var(--muted); } .liveTag.off i { background: #789A7C; animation: none; }
 @keyframes blink { 50% { opacity: 0.3; } }
-#vName { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 2.8vw, 54px); line-height: 1.05; margin: 0; word-break: break-word; }
+#vName { font-family: var(--display); font-weight: 800; font-size: clamp(30px, 2.8vw, 54px); line-height: 1.05; margin: 0; word-break: break-word; }
 #vRank { color: var(--gold); font-weight: 800; }
-.big { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 4.6vw, 88px); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.big { font-family: var(--display); font-weight: 800; font-size: clamp(44px, 4.6vw, 88px); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
 .stat span { display: block; font-size: 0.72em; color: var(--muted); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
@@ -100,7 +100,7 @@ tr.on .watch { border-color: var(--gold); color: var(--gold); }
 <body>
 <header>
   <div><div class="eyebrow">Lưới Lửa Tri Thức</div><h1>Bảng Xếp Hạng</h1></div>
-  <div class="join"><div class="txt"><span>Quét mã hoặc mở</span><strong id="joinUrl">đang lấy địa chỉ…</strong></div><div id="qr"></div></div>
+  <div class="join"><div class="txt"><span>Quét mã để chơi</span><strong id="joinUrl" hidden></strong></div><div id="qr"></div></div>
 </header>
 
 <div class="chips">
@@ -118,7 +118,7 @@ tr.on .watch { border-color: var(--gold); color: var(--gold); }
 <div class="wrap">
   <table>
     <thead><tr><th>#</th><th>Người chơi</th><th>Tiến độ</th><th>Mạng</th><th class="num">Điểm</th><th class="num">Cao nhất</th><th>Trạng thái</th><th></th></tr></thead>
-    <tbody id="rows"><tr><td colspan="8" class="empty">Chưa có ai vào chơi. Người chơi quét mã hoặc mở địa chỉ ở góc trên, nhập tên rồi chơi.</td></tr></tbody>
+    <tbody id="rows"><tr><td colspan="8" class="empty">Chưa có ai vào chơi. Người chơi quét mã ở góc trên, nhập tên rồi chơi.</td></tr></tbody>
   </table>
 </div>
 <p id="err" class="err" hidden></p>

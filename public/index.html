@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#1C4428">
 <title>Lưới Lửa Tri Thức</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800;900&family=Be+Vietnam+Pro:wght@500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap">
 <style>
 :root {
   --bg: #1C4428; --panel: #285A35; --panel-2: #316C40; --line: #5E9E66;
   --cinnabar: #C8352C; --gold: #E2AE45; --egg: #F3EBD8; --jade: #3F9D6E; --muted: #C4E2C6; --ink: #0B2414;
-  --display: "Alegreya", Georgia, serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
+  --display: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -25,8 +25,8 @@ button { font: inherit; cursor: pointer; }
 .screen.dim { background: rgba(8, 28, 14, 0.78); }
 .card { width: min(380px, 100%); display: grid; gap: 14px; text-align: center; }
 .eyebrow { font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
-h1 { margin: 0; font-family: var(--display); font-weight: 900; font-size: clamp(38px, 11vw, 54px); line-height: 0.95; }
-h2 { margin: 0; font-family: var(--display); font-weight: 900; font-size: 40px; line-height: 1; }
+h1 { margin: 0; font-family: var(--display); font-weight: 800; font-size: clamp(38px, 11vw, 54px); line-height: 0.95; }
+h2 { margin: 0; font-family: var(--display); font-weight: 800; font-size: 40px; line-height: 1; }
 input { font: inherit; font-size: 17px; font-weight: 700; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--line); background: var(--panel); color: var(--egg); text-align: center; width: 100%; }
 input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 .btn { font-size: 18px; font-weight: 800; padding: 13px 18px; border-radius: 6px; border: 0; background: var(--gold); color: var(--ink); box-shadow: 0 4px 0 #9C7322; }
@@ -39,7 +39,7 @@ input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 .tip { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 15px; padding: 5px 0; }
 .tip svg { flex: none; }
 .best { font-size: 13px; color: var(--muted); font-weight: 700; }
-.big { font-family: var(--display); font-weight: 900; font-size: 64px; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.big { font-family: var(--display); font-weight: 800; font-size: 64px; line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
 .stats { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
 .stat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; font-weight: 700; font-size: 14px; }
 .stat b { color: var(--gold); }
@@ -47,7 +47,7 @@ input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
 .pick { display: grid; gap: 6px; align-content: start; padding: 16px 8px; border-radius: 8px; border: 2px solid var(--gold); background: var(--panel-2); color: var(--egg); text-align: center; box-shadow: 0 4px 0 #0B2414; }
 .pick:active { transform: translateY(2px); }
 .pick:focus-visible { outline: 3px solid var(--egg); }
-.pick b { font-family: var(--display); font-size: 20px; font-weight: 900; color: var(--gold); line-height: 1.1; }
+.pick b { font-family: var(--display); font-size: 20px; font-weight: 800; color: var(--gold); line-height: 1.1; }
 .pick span { font-size: 14px; font-weight: 700; color: var(--muted); }
 [hidden] { display: none !important; }
 </style>
@@ -145,15 +145,17 @@ const CONFIG = {
   shuffleAnswers: true,   // xáo vị trí 5 đáp án
   shuffleQuestions: false,// xáo thứ tự câu hỏi
   hearts: 5,              // số mạng
+  damage: 1.5,            // sát thương mỗi viên đạn bắn vào máy bay (1 = gốc)
+  readTime: 3,            // số giây hiện câu hỏi trước khi thả thùng đáp án (vẫn bắn máy bay được trong lúc đọc)
   fireRate: 1.5,          // số viên súng tự bắn mỗi giây (bắn liên tục, không giới hạn đạn)
   ballSpeed: 720,
   bounceJitter: 0.1,      // độ lệch ngẫu nhiên khi bóng nảy (radian, 0 = nảy chuẩn)
-  blockHp: 5,             // số phát để vỡ một ô đáp án
+  blockHp: 6,             // số phát để vỡ một thùng đáp án (đạn lửa ×2)
   wallSpeed: 9,           // tốc độ ô đáp án rơi xuống
   shieldTime: 0,          // số giây đầu mỗi câu đá chưa vỡ được (0 = bắn vỡ được ngay)
   bombSfxVolume: 0.14,    // âm lượng tiếng bom rơi (file âm thanh bạn gửi)
   woodSfxVolume: 0.22,    // âm lượng tiếng đạn trúng thùng gỗ
-  bombHp: 3,              // số phát phải bắn trúng một quả bom mới nổ
+  bombHp: 2,              // số phát phải bắn trúng một quả bom mới nổ
   fireballR: 20,          // cỡ quả bom B-52 thả xuống
   fireball2From: 8,       // từ câu số này B-52 thả 2 quả bom một lần
   fireball3From: 15,      // từ câu số này B-52 thả 3 quả bom một lần
@@ -233,7 +235,7 @@ addEventListener("resize", () => { if (!S || S.over) pickH(); resize(); });
 pickH(); resize();
 
 const FONT = '"Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif';
-const DFONT = 'Alegreya, Georgia, serif';
+const DFONT = FONT;
 const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = (id) => document.getElementById(id);
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -483,7 +485,7 @@ function noiseBurst(dur, vol, freq) {
 
 /* ---------------- Trạng thái ---------------- */
 let S = null, paused = false;
-const FIRE_PHASES = ["intro", "fall", "attack"];
+const FIRE_PHASES = ["read", "intro", "fall", "attack"];
 
 function startGame() {
   W = laneWidth(0);
@@ -501,7 +503,7 @@ function startGame() {
     boss: { hp: N * CONFIG.bossHpPerQuestion, max: N * CONFIG.bossHpPerQuestion, y: L.bossStart - 140, ty: L.bossStart, flash: 0, hurt: 0 },
     wall: null, phase: "next", phaseT: 0.3, fallT: 0, attackT: 0,
     aim: { x: W / 2, y: L.py - 300 }, aimShow: false, holding: false, armed: false, fireCd: 0, eshots: [], falling: [],
-    streak: 0, bestStreak: 0, mult: 1, fireRate: CONFIG.fireRate, shots: 1, power: 1, got: [], banner: null, ballR: L.br, shield: 0, owned: {}, throwT: 3, lastQ: false, picks: [],
+    streak: 0, bestStreak: 0, mult: 1, fireRate: CONFIG.fireRate, shots: 1, power: 1, got: [], banner: null, ballR: L.br, shield: 0, owned: {}, throwT: 3, lastQ: false, picks: [], showQ: -1, previewAt: {},
     parts: [], texts: [], shake: 0, flash: 0, time: 0, t0: performance.now(), over: false, result: null,
   };
   $("startScr").hidden = true; $("endScr").hidden = true; $("top").hidden = false;
@@ -528,15 +530,21 @@ function startQuestion(i) {
     blocks: q.answers.map((a, k) => ({ x: k * bw, w: bw, k, ...a, hp: CONFIG.blockHp, max: CONFIG.blockHp, state: a.blank ? "stone" : "live", flash: 0, seed: Math.random() * 1000 })),
     alpha: 1,
   };
-  S.phase = "intro"; S.phaseT = 0; S.fallT = 0;
+  // câu hỏi hiện trước CONFIG.readTime giây rồi mới thả thùng (nếu đã xem trước lúc tấn công thì trừ đi)
+  const seen = S.previewAt[i] != null ? S.time - S.previewAt[i] : 0;
+  S.showQ = i; S.fallT = 0; S.phaseT = 0;
+  if (CONFIG.readTime - seen > 0.2) { S.phase = "read"; S.readT = CONFIG.readTime - seen; S.wall.alpha = 0; }
+  else S.phase = "intro";
   S.throwT = Math.min(S.throwT > 0 ? S.throwT : 1e9, throwGap() * 0.7); // không dời lượt thả bom sắp tới sang câu sau
   S.lastQ = i === S.N - 1 && S.N > 1;
   if (S.lastQ) { S.banner = { title: "Câu cuối!", sub: `B-52 dốc toàn lực · điểm ×${CONFIG.finalMult}`, t: 2.4 }; sfx("bad"); }
-  // bóng đang bay ở chỗ hàng ô mới sẽ hiện ra thì biến mất
-  // đạn còn bay từ câu trước biến mất, để không bắn vỡ nhầm đá mới
+  if (S.phase === "intro") clearBalls();
+  sendStatus();
+}
+// đạn còn bay từ câu trước biến mất, để không bắn vỡ nhầm thùng mới
+function clearBalls() {
   for (const b of S.balls) burst(b.x, b.y, "#E2AE45", 2, 50);
   S.balls = [];
-  sendStatus();
 }
 
 function startWiden() {
@@ -683,15 +691,16 @@ function breakStreak() {
 }
 
 function hitBoss(x, y) {
-  const floor = bossFloor();
-  if (S.phase !== "attack") { sfx("stone"); return; }
+  // lúc đọc câu hỏi cũng bắn được máy bay, nhưng chừa lại 1 máu để giáp chỉ vỡ khi đã trả lời đúng
+  const floor = bossFloor() + (S.phase === "read" ? 1 : 0);
+  if (S.phase !== "attack" && S.phase !== "read") { sfx("stone"); return; }
   if (S.boss.hp <= floor) {
     // đã phá giáp: máu không giảm thêm nhưng mỗi phát trúng vẫn được điểm
     const pts = Math.round(SCORING.damage * 0.5 * S.power * M()); S.score += pts; S.stats.hits++;
     burst(x, y, "#FFE29A", 4, 120); sfx("boss");
     return;
   }
-  const dmg = Math.min(S.power, S.boss.hp - floor);
+  const dmg = Math.min(S.power * CONFIG.damage, S.boss.hp - floor);
   S.boss.hp -= dmg; S.boss.flash = 1; S.boss.hurt = 0.25; S.stats.hits++;
   addScore(Math.round(SCORING.damage * dmg * M()));
   burst(x, y, S.power > 1 ? "#FF9A3C" : "#FFD27A", 5, 140);
@@ -703,7 +712,7 @@ function hitBossDone() {
   if (S.phase !== "attack") return;
   S.shake = 8;
   if (S.boss.hp <= 0) { S.phase = "dying"; S.phaseT = 0; S.balls = []; sfx("win"); }
-  else S.attackT = Math.min(S.attackT, CONFIG.afterBreak);
+  else S.attackT = Math.min(S.attackT, Math.max(CONFIG.afterBreak, S.qi + 1 < S.N ? CONFIG.readTime : 0));
 }
 
 function addScore(n, x, y) { S.score += n; if (x != null) addText(x, y, `+${n}`, "#FFE29A", 20); }
@@ -780,7 +789,13 @@ function update(dt) {
   } else if (S.phase === "attack") {
     S.attackT -= dt;
     S.throwT -= dt; if (S.throwT <= 0) { bossThrow(); S.throwT = throwGap() * 1.6; } // lúc tấn công boss ném thưa hơn
+    // vài giây cuối của lượt tấn công: hiện trước câu hỏi tiếp theo để người chơi đọc
+    if (S.attackT <= CONFIG.readTime && S.qi + 1 < S.N && S.showQ !== S.qi + 1) { S.showQ = S.qi + 1; S.previewAt[S.qi + 1] = S.time; }
     if (S.attackT <= 0) toNext();
+  } else if (S.phase === "read") {
+    S.readT -= dt;
+    S.throwT -= dt; if (S.throwT <= 0) { bossThrow(); S.throwT = throwGap() * 1.6; }
+    if (S.readT <= 0) { S.phase = "intro"; S.phaseT = 0; w.alpha = 1; clearBalls(); }
   } else if (S.phase === "reveal") {
     if (S.phaseT > 0.9 && !S.falling.length) toNext();
   } else if (S.phase === "next") {
@@ -1187,13 +1202,13 @@ function drawBoss() {
   const px = 12, pw = W - 24, py = y + 12, ph = 50;
   ctx.fillStyle = "#FFF8E1"; rr(px, py, pw, ph, 5); ctx.fill();
   ctx.strokeStyle = "#A8160F"; ctx.lineWidth = 2.5; ctx.stroke();
-  const q = S.qs[Math.max(0, S.qi)];
-  if (q && S.qi >= 0) {
+  const qn = S.showQ >= 0 ? S.showQ : S.qi, q = S.qs[Math.max(0, qn)];
+  if (q && qn >= 0) {
     const f = fitText(q.q, pw - 20, ph - 6, 16, 10, 800);
     ctx.fillStyle = "#8E120C"; ctx.font = `800 ${f.size}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle";
     const y0 = py + ph / 2 - (f.lines.length - 1) * f.lh / 2;
     f.lines.forEach((l, i) => ctx.fillText(l, cx, y0 + i * f.lh));
-    if (isGift()) {
+    if (UPGRADE_QUESTIONS.includes(qn + 1)) {
       const bxg = px + pw - 62, byg = py - 10;
       ctx.fillStyle = "#E2AE45"; rr(bxg, byg, 66, 20, 4); ctx.fill();
       ctx.strokeStyle = "#3A0C14"; ctx.lineWidth = 1.5; ctx.stroke();
@@ -1719,7 +1734,7 @@ function drawHud() {
   const nh = Math.max(S.maxHearts, S.hearts);
   for (let i = 0; i < nh; i++) heart(16 + i * 22, 12, 18, i < S.hearts ? "#FF5A4E" : "rgba(255,255,255,0.15)");
   ctx.textBaseline = "middle";
-  ctx.textAlign = "center"; ctx.fillStyle = "#FFE29A"; ctx.font = `900 26px ${DFONT}`;
+  ctx.textAlign = "center"; ctx.fillStyle = "#FFE29A"; ctx.font = `800 26px ${DFONT}`;
   const sc = Math.round(S.shownScore).toLocaleString("vi-VN"), sw = ctx.measureText(sc).width;
   const sx = Math.max(W / 2, 16 + nh * 22 + 10 + sw / 2); // không đè lên hàng tim
   ctx.lineWidth = 5; ctx.strokeStyle = "rgba(20, 30, 20, 0.8)"; ctx.strokeText(sc, sx, 22); ctx.fillText(sc, sx, 22);
@@ -1734,7 +1749,7 @@ function drawHud() {
     ctx.globalAlpha = a; ctx.textAlign = "center";
     ctx.fillStyle = "rgba(8, 30, 14, 0.82)"; rr(W / 2 - 120, y - 32, 240, 64, 6); ctx.fill();
     ctx.strokeStyle = "#E2AE45"; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = "#FFE29A"; ctx.font = `900 26px ${DFONT}`; ctx.fillText(b.title, W / 2, y - 9);
+    ctx.fillStyle = "#FFE29A"; ctx.font = `800 26px ${DFONT}`; ctx.fillText(b.title, W / 2, y - 9);
     ctx.fillStyle = "#F3EBD8"; ctx.font = `800 15px ${FONT}`; ctx.fillText(b.sub, W / 2, y + 16);
     ctx.globalAlpha = 1;
   }
