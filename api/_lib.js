@@ -2,7 +2,7 @@
 // không có thì lưu tạm trong bộ nhớ (chỉ để chạy thử, có thể mất dữ liệu).
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
-const mem = globalThis.__bbls || (globalThis.__bbls = { players: {} });
+const mem = globalThis.__bbls || (globalThis.__bbls = { players: {}, frames: {}, watch: {} });
 
 async function cmd(commands) {
   const r = await fetch(`${URL_}/pipeline`, {
@@ -63,4 +63,29 @@ async function resetAll() {
   await cmd([...dels, ["DEL", "bbls:ids"]]);
 }
 
-module.exports = { updatePlayer, listPlayers, resetAll, persistent: !!URL_ };
+const cleanId = (v) => clip(v, 20).replace(/[^\w-]/g, "");
+
+// Xem trực tiếp: admin đang xem ai thì ghi cờ bbls:w:<id> (hết hạn sau 6 giây nếu admin thôi xem);
+// máy người chơi thấy cờ thì gửi ảnh chụp màn hình nhỏ vào bbls:f:<id> (hết hạn sau 20 giây).
+async function isWatched(id) {
+  id = cleanId(id); if (!id) return false;
+  if (!URL_) return (mem.watch[id] || 0) > Date.now();
+  const [n] = await cmd([["EXISTS", `bbls:w:${id}`]]);
+  return n > 0;
+}
+async function putFrame(id, img, note) {
+  id = cleanId(id);
+  if (!id || typeof img !== "string" || !img.startsWith("data:image/") || img.length > 400000) return false;
+  const f = JSON.stringify({ img, note: clip(note, 60), t: Date.now() });
+  if (!URL_) { mem.frames[id] = f; return isWatched(id); }
+  const [, n] = await cmd([["SET", `bbls:f:${id}`, f, "EX", 20], ["EXISTS", `bbls:w:${id}`]]);
+  return n > 0;
+}
+async function watchFrame(id) {
+  id = cleanId(id); if (!id) return null;
+  if (!URL_) { mem.watch[id] = Date.now() + 6000; return mem.frames[id] ? JSON.parse(mem.frames[id]) : null; }
+  const [, raw] = await cmd([["SET", `bbls:w:${id}`, "1", "EX", 6], ["GET", `bbls:f:${id}`]]);
+  return raw ? JSON.parse(raw) : null;
+}
+
+module.exports = { updatePlayer, listPlayers, resetAll, isWatched, putFrame, watchFrame, persistent: !!URL_ };

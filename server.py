@@ -2,13 +2,14 @@
 # Chạy: python server.py   (đổi cổng: python server.py 8080)
 import json, os, socket, sys, threading, time
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 3000
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, "data.json")
 FILES = {"/": "index.html", "/index.html": "index.html", "/admin": "admin.html", "/admin.html": "admin.html"}
 LOCK = threading.Lock()
+FRAMES, WATCH = {}, {}  # xem trực tiếp, chỉ giữ trong bộ nhớ
 try:
     sys.stdout.reconfigure(encoding="utf-8")
 except Exception:
@@ -95,8 +96,20 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         global players
         path = urlparse(self.path).path
-        length = min(int(self.headers.get("Content-Length") or 0), 10000)
+        limit = 500000 if path == "/api/live" else 10000
+        length = min(int(self.headers.get("Content-Length") or 0), limit)
         body = self.rfile.read(length)
+        try:
+            b = json.loads(body)
+        except Exception:
+            b = {}
+        pid = str(b.get("id", "")) if isinstance(b, dict) else ""
+        watch = WATCH.get(pid, 0) > time.time()
+        if path == "/api/live":
+            img = b.get("img") if isinstance(b, dict) else None
+            if isinstance(img, str) and img.startswith("data:image/"):
+                FRAMES[pid] = {"img": img, "note": str(b.get("note", ""))[:60], "t": int(time.time() * 1000)}
+            return self.send(200, json.dumps({"watch": watch}))
         with LOCK:
             if path == "/api/reset":
                 players = {}
@@ -104,10 +117,10 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, "{}")
             if path == "/api/status":
                 try:
-                    update_player(json.loads(body))
+                    update_player(b)
                 except Exception:
                     pass
-                return self.send(204)
+                return self.send(200, json.dumps({"watch": watch}))
         self.send(404)
 
     def do_GET(self):
@@ -115,6 +128,10 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/api/players":
             with LOCK:
                 return self.send(200, json.dumps({"now": int(time.time() * 1000), "players": list(players.values())}, ensure_ascii=False))
+        if path == "/api/live":
+            pid = (parse_qs(urlparse(self.path).query).get("id") or [""])[0]
+            WATCH[pid] = time.time() + 6
+            return self.send(200, json.dumps({"now": int(time.time() * 1000), "frame": FRAMES.get(pid)}))
         if path == "/api/info":
             return self.send(200, json.dumps({"urls": lan_urls()}))
         name = FILES.get(path)

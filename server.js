@@ -50,6 +50,9 @@ function updatePlayer(b) {
   save();
 }
 
+// Xem trực tiếp (chỉ giữ trong bộ nhớ)
+const frames = {}, watching = {};
+
 function send(res, code, body, type) {
   res.writeHead(code, { "Content-Type": type || "application/json; charset=utf-8", "Cache-Control": "no-store" });
   res.end(body);
@@ -57,15 +60,28 @@ function send(res, code, body, type) {
 
 http.createServer((req, res) => {
   const url = new URL(req.url, "http://x");
-  if (req.method === "POST" && (url.pathname === "/api/status" || url.pathname === "/api/reset")) {
+  if (req.method === "POST" && (url.pathname === "/api/status" || url.pathname === "/api/reset" || url.pathname === "/api/live")) {
     let body = "";
-    req.on("data", (c) => { body += c; if (body.length > 10000) req.destroy(); });
+    const max = url.pathname === "/api/live" ? 500000 : 10000;
+    req.on("data", (c) => { body += c; if (body.length > max) req.destroy(); });
     req.on("end", () => {
       if (url.pathname === "/api/reset") { players = {}; save(); return send(res, 200, "{}"); }
-      try { updatePlayer(JSON.parse(body)); } catch (e) {}
-      send(res, 204, "");
+      let b = {};
+      try { b = JSON.parse(body); } catch (e) {}
+      const id = String(b.id || "");
+      if (url.pathname === "/api/live") {
+        if (typeof b.img === "string" && b.img.startsWith("data:image/")) frames[id] = { img: b.img, note: String(b.note || "").slice(0, 60), t: Date.now() };
+        return send(res, 200, JSON.stringify({ watch: (watching[id] || 0) > Date.now() }));
+      }
+      try { updatePlayer(b); } catch (e) {}
+      send(res, 200, JSON.stringify({ watch: (watching[id] || 0) > Date.now() }));
     });
     return;
+  }
+  if (url.pathname === "/api/live") {
+    const id = url.searchParams.get("id") || "";
+    watching[id] = Date.now() + 6000;
+    return send(res, 200, JSON.stringify({ now: Date.now(), frame: frames[id] || null }));
   }
   if (url.pathname === "/api/players") return send(res, 200, JSON.stringify({ now: Date.now(), players: Object.values(players) }));
   if (url.pathname === "/api/info") return send(res, 200, JSON.stringify({ urls: lanUrls() }));

@@ -67,9 +67,12 @@ B. CHẠY TRÊN LAPTOP (không cần Internet, cả lớp dùng chung Wi-Fi vớ
   Wi-Fi trường hay chặn các máy nói chuyện với nhau: khi đó bật hotspot trên điện thoại/laptop
   cho cả lớp và laptop cùng vào, rồi chạy lại server.
 
-MÀN ADMIN
-  Hiện từng người: câu đang làm, mạng còn lại, điểm hiện tại, điểm cao nhất, số lần chơi.
-  Tự cập nhật mỗi 2 giây. Bấm "Xóa dữ liệu" trước buổi thật để xóa lượt chơi thử.
+MÀN ADMIN (mở /admin trên máy chiếu)
+  Bảng xếp hạng: câu đang làm, mạng còn lại, điểm hiện tại, điểm cao nhất. Tự cập nhật mỗi 2 giây.
+  Góc trên có mã QR và địa chỉ để cả lớp quét vào chơi.
+  Bấm vào một người chơi để XEM TRỰC TIẾP màn hình của họ (khoảng 2 hình/giây, chậm 1-3 giây).
+    Phím ← → chuyển người, Esc đóng. Chỉ máy đang được xem mới gửi hình, nên không tốn mạng của cả lớp.
+  Bấm "Xóa dữ liệu" trước buổi thật để xóa lượt chơi thử.
 
 CÁCH TÍNH ĐIỂM
   Mỗi câu đúng 300, cộng thưởng nhanh tối đa 200 (giảm dần về 0 sau 20 giây).

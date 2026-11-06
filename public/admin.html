@@ -3,79 +3,112 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Bảng Theo Dõi · Lưới Lửa Tri Thức</title>
+<title>Bảng Xếp Hạng · Lưới Lửa Tri Thức</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800;900&family=Be+Vietnam+Pro:wght@400;600;800&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
-/* Màn chiếu cho admin: tiêu đề và link vào chơi ở trên, bảng xếp hạng chiếm phần lớn màn hình */
+/* Màn admin để trình chiếu: bảng xếp hạng, bấm vào một người chơi để xem trực tiếp màn hình của họ */
 :root {
-  --bg: #13235A; --panel: #1D3170; --panel-2: #264088; --line: #4668BC;
-  --cinnabar: #B3261E; --gold: #D9A441; --egg: #EFE6D2; --jade: #3F7D5E; --muted: #B4C4EE; --ink: #0A1236;
+  --bg: #1C4428; --panel: #285A35; --panel-2: #316C40; --line: #5E9E66;
+  --cinnabar: #C8352C; --gold: #E2AE45; --egg: #F3EBD8; --jade: #3F9D6E; --muted: #C4E2C6; --ink: #0B2414;
   --display: "Alegreya", Georgia, serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
-body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #3C62C8 0%, #25449E 35%, var(--bg) 75%); color: var(--egg); font-family: var(--body); font-size: clamp(15px, 1.25vw, 20px); padding: 20px max(16px, 2.5vw) 32px; }
-header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 20px; }
-.eyebrow { font-size: 0.75em; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
-h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 900; font-size: clamp(32px, 3.6vw, 60px); line-height: 1; }
-.join { display: grid; gap: 2px; text-align: right; }
+body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #4A9A5C 0%, #2C6B3C 38%, var(--bg) 78%); color: var(--egg); font-family: var(--body); font-size: clamp(15px, 1.2vw, 22px); padding: 20px max(16px, 2.5vw) 32px; }
+header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-bottom: 18px; }
+.eyebrow { font-size: 0.72em; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 900; font-size: clamp(34px, 3.8vw, 68px); line-height: 1; }
+.join { display: flex; align-items: center; gap: 16px; background: rgba(28, 68, 40, 0.75); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.join .txt { display: grid; gap: 2px; text-align: right; }
 .join span { font-size: 0.8em; color: var(--muted); font-weight: 600; }
-.join strong { font-family: var(--display); font-size: clamp(22px, 2.4vw, 40px); color: var(--gold); letter-spacing: 0.01em; word-break: break-all; }
-.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.join strong { font-family: var(--display); font-size: clamp(20px, 2vw, 36px); color: var(--gold); word-break: break-all; }
+#qr { background: #fff; padding: 6px; border-radius: 6px; line-height: 0; }
+#qr:empty { display: none; }
+#qr img, #qr canvas { width: clamp(84px, 7vw, 130px); height: auto; display: block; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; align-items: center; }
 .chip { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
 .chip b { color: var(--gold); }
 .spacer { flex: 1; }
+.hint { font-size: 0.8em; color: var(--muted); }
 button { font: inherit; font-size: 0.85em; font-weight: 700; color: var(--egg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button:hover { border-color: var(--egg); }
 button.on { border-color: var(--gold); color: var(--gold); }
 button.danger { border-color: var(--cinnabar); }
 button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
-.wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: rgba(24, 40, 100, 0.7); }
+.wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: rgba(28, 68, 40, 0.78); }
 table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-th { text-align: left; font-size: 0.72em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
-td { padding: 12px 14px; border-bottom: 1px solid rgba(70, 104, 188, 0.45); vertical-align: middle; }
+th { text-align: left; font-size: 0.7em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid rgba(94, 158, 102, 0.4); vertical-align: middle; }
+tbody tr { cursor: pointer; transition: background 0.15s; }
+tbody tr:hover { background: rgba(226, 174, 69, 0.1); }
 tr:last-child td { border-bottom: 0; }
 td.num, th.num { text-align: right; }
-.rank { font-family: var(--display); font-weight: 900; font-size: 1.4em; color: var(--muted); width: 2.5em; }
-tr.top1 .rank { color: #F2C230; } tr.top2 .rank { color: #D8DEE4; } tr.top3 .rank { color: #C98A4E; }
+.rank { font-family: var(--display); font-weight: 900; font-size: 1.5em; color: var(--muted); width: 2.4em; }
+tr.top1 .rank { color: #F2C230; } tr.top2 .rank { color: #D8DEE4; } tr.top3 .rank { color: #D0925A; }
+tr.top1 td { background: rgba(242, 194, 48, 0.08); }
 .who { display: grid; gap: 2px; }
 .who strong { font-size: 1.1em; }
-.who span { font-size: 0.8em; color: var(--muted); }
-.dots { display: flex; gap: 4px; margin-bottom: 4px; }
-.dots i { width: 8px; height: 8px; border-radius: 2px; background: var(--line); }
-.dots i.done { background: var(--gold); }
-.dots i.now { background: var(--egg); }
-.stage { font-size: 0.85em; }
+.who span { font-size: 0.78em; color: var(--muted); }
+.prog { display: grid; gap: 5px; min-width: 150px; }
+.bar { height: 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.3); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--gold); border-radius: 4px; }
+.stage { font-size: 0.82em; color: var(--muted); }
 .badge { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 0.8em; font-weight: 800; }
 .badge.win { background: var(--jade); color: #fff; }
 .badge.lose { background: var(--cinnabar); color: #fff; }
-.hpbar { width: 110px; height: 10px; border-radius: 3px; background: rgba(179, 38, 30, 0.2); overflow: hidden; border: 1px solid #000; }
-.hpbar i { display: block; height: 100%; background: var(--cinnabar); }
-.hptext { font-size: 0.75em; color: var(--muted); }
+.hearts { color: #FF5A4E; letter-spacing: 1px; white-space: nowrap; font-size: 1.05em; }
+.hearts s { color: rgba(255, 255, 255, 0.22); text-decoration: none; }
 .score { font-family: var(--display); font-weight: 900; font-size: 1.35em; }
 .best { font-family: var(--display); font-weight: 900; font-size: 1.35em; color: var(--gold); }
 .live { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8em; color: var(--muted); white-space: nowrap; }
-.live i { width: 10px; height: 10px; border-radius: 50%; background: #7787B8; }
-.live.on i { background: #4CD07D; box-shadow: 0 0 8px #4CD07D; }
-.empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+.live i { width: 10px; height: 10px; border-radius: 50%; background: #789A7C; flex: none; }
+.live.on i { background: #5BE08A; box-shadow: 0 0 8px #5BE08A; }
+.watch { font-size: 0.78em; padding: 5px 10px; white-space: nowrap; }
+tr.on .watch { border-color: var(--gold); color: var(--gold); }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); cursor: default; }
 .err { color: #FF8A7E; font-weight: 600; }
+
+/* Xem trực tiếp */
+#viewer { position: fixed; inset: 0; z-index: 10; background: rgba(8, 24, 13, 0.97); display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 26vw); gap: 24px; padding: 20px max(16px, 2.5vw); }
+.screenBox { position: relative; display: grid; place-items: center; min-height: 0; }
+#shot { max-width: 100%; max-height: calc(100vh - 40px); border-radius: 10px; border: 2px solid var(--line); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6); background: #000; image-rendering: auto; }
+#shotMsg { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; color: var(--muted); font-weight: 700; padding: 20px; pointer-events: none; }
+#shotMsg span { background: rgba(8, 24, 13, 0.82); border: 1px solid var(--line); border-radius: 10px; padding: 14px 20px; max-width: 30em; }
+#shotNote { position: absolute; left: 50%; top: 14px; transform: translateX(-50%); background: var(--gold); color: var(--ink); font-weight: 800; padding: 6px 14px; border-radius: 8px; white-space: nowrap; }
+.side { display: flex; flex-direction: column; gap: 14px; min-height: 0; overflow: auto; }
+.side .top { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.liveTag { display: inline-flex; align-items: center; gap: 8px; font-weight: 800; color: #FF6B5E; letter-spacing: 0.12em; font-size: 0.8em; }
+.liveTag i { width: 12px; height: 12px; border-radius: 50%; background: #FF4A3D; animation: blink 1.2s infinite; }
+.liveTag.off { color: var(--muted); } .liveTag.off i { background: #789A7C; animation: none; }
+@keyframes blink { 50% { opacity: 0.3; } }
+#vName { font-family: var(--display); font-weight: 900; font-size: clamp(30px, 2.8vw, 54px); line-height: 1.05; margin: 0; word-break: break-word; }
+#vRank { color: var(--gold); font-weight: 800; }
+.big { font-family: var(--display); font-weight: 900; font-size: clamp(44px, 4.6vw, 88px); line-height: 1; color: var(--gold); font-variant-numeric: tabular-nums; }
+.stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; }
+.stat span { display: block; font-size: 0.72em; color: var(--muted); font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.stat b { font-size: 1.3em; font-variant-numeric: tabular-nums; }
+.nav { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+.nav button { flex: 1; padding: 10px 12px; }
+@media (max-width: 760px) { #viewer { grid-template-columns: 1fr; overflow: auto; } #shot { max-height: 70vh; } }
 [hidden] { display: none !important; }
 </style>
 </head>
 <body>
 <header>
-  <div><div class="eyebrow">Lưới Lửa Tri Thức · Màn admin</div><h1>Bảng Theo Dõi</h1></div>
-  <div class="join"><span>Vào chơi tại</span><strong id="joinUrl">đang lấy địa chỉ…</strong></div>
+  <div><div class="eyebrow">Lưới Lửa Tri Thức</div><h1>Bảng Xếp Hạng</h1></div>
+  <div class="join"><div class="txt"><span>Quét mã hoặc mở</span><strong id="joinUrl">đang lấy địa chỉ…</strong></div><div id="qr"></div></div>
 </header>
 
 <div class="chips">
   <span class="chip">Người chơi <b id="cAll">0</b></span>
   <span class="chip">Đang chơi <b id="cLive">0</b></span>
-  <span class="chip">Hạ địch <b id="cWin">0</b></span>
-  <span class="chip">Tổng lượt chơi <b id="cPlays">0</b></span>
+  <span class="chip">Hạ B-52 <b id="cWin">0</b></span>
+  <span class="hint">Bấm vào một người để xem màn hình của họ</span>
   <span class="spacer"></span>
-  <span class="muted" style="font-size:.8em">Xếp theo</span>
   <button id="sortBest" class="on">Điểm cao nhất</button>
   <button id="sortNow">Điểm hiện tại</button>
   <button id="resetBtn" class="danger">Xóa dữ liệu</button>
@@ -84,58 +117,89 @@ tr.top1 .rank { color: #F2C230; } tr.top2 .rank { color: #D8DEE4; } tr.top3 .ran
 
 <div class="wrap">
   <table>
-    <thead><tr><th>#</th><th>Người chơi</th><th class="num">Lần chơi</th><th>Đang ở</th><th>Mạng</th><th class="num">Điểm hiện tại</th><th class="num">Cao nhất</th><th>Hoạt động</th></tr></thead>
-    <tbody id="rows"><tr><td colspan="8" class="empty">Chưa có ai vào chơi. Người chơi mở địa chỉ ở góc trên, nhập tên rồi chơi.</td></tr></tbody>
+    <thead><tr><th>#</th><th>Người chơi</th><th>Tiến độ</th><th>Mạng</th><th class="num">Điểm</th><th class="num">Cao nhất</th><th>Trạng thái</th><th></th></tr></thead>
+    <tbody id="rows"><tr><td colspan="8" class="empty">Chưa có ai vào chơi. Người chơi quét mã hoặc mở địa chỉ ở góc trên, nhập tên rồi chơi.</td></tr></tbody>
   </table>
 </div>
 <p id="err" class="err" hidden></p>
+
+<div id="viewer" hidden>
+  <div class="screenBox">
+    <img id="shot" alt="Màn hình người chơi" hidden>
+    <div id="shotNote" hidden></div>
+    <div id="shotMsg"><span>Đang kết nối…</span></div>
+  </div>
+  <aside class="side">
+    <div class="top"><span class="liveTag" id="vLive"><i></i>TRỰC TIẾP</span><button id="vClose">Đóng ✕</button></div>
+    <div><div id="vRank"></div><h2 id="vName"></h2></div>
+    <div><div class="eyebrow">Điểm</div><div class="big" id="vScore">0</div></div>
+    <div class="stats">
+      <div class="stat"><span>Câu</span><b id="vStage">–</b></div>
+      <div class="stat"><span>Mạng</span><b id="vHp" class="hearts">–</b></div>
+      <div class="stat"><span>Đúng / sai</span><b id="vCw">–</b></div>
+      <div class="stat"><span>Thời gian</span><b id="vTime">–</b></div>
+      <div class="stat"><span>Cao nhất</span><b id="vBest">–</b></div>
+      <div class="stat"><span>Lần chơi</span><b id="vPlays">–</b></div>
+    </div>
+    <div class="nav"><button id="vPrev">← Người trước</button><button id="vNext">Người sau →</button></div>
+  </aside>
+</div>
 
 <script>
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const fmt = (n) => Math.round(n || 0).toLocaleString("vi-VN");
 const fmtTime = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
-let sortKey = "best";
+const hearts = (p) => p.maxHp ? "♥".repeat(Math.max(0, p.hp)) + `<s>${"♥".repeat(Math.max(0, p.maxHp - Math.max(0, p.hp)))}</s>` : "–";
+let sortKey = "best", needKey = false, last = null, order = [];
 
-let needKey = false;
-fetch("api/info").then((r) => r.json()).then((d) => { needKey = !!d.needKey; $("joinUrl").textContent = d.urls.join("  hoặc  "); })
-  .catch(() => { $("joinUrl").textContent = location.origin; });
+fetch("api/info").then((r) => r.json()).then((d) => setJoin(d.urls[0] || location.origin, !!d.needKey)).catch(() => setJoin(location.origin, false));
+function setJoin(url, nk) {
+  needKey = nk;
+  $("joinUrl").textContent = url.replace(/^https?:\/\//, "");
+  try { $("qr").innerHTML = ""; new QRCode($("qr"), { text: url, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.M }); } catch (e) {}
+}
 
+const isOn = (p, now) => now - p.lastSeen < 15000 && !p.result;
 function stageCell(p) {
-  if (p.result === "win") return `<span class="badge win">Hạ địch</span> <span class="stage">${fmtTime(p.sec)}</span>`;
-  if (p.result === "lose") return `<span class="badge lose">${p.stageName === "Rời trận" ? "Rời trận" : p.hp <= 0 ? "Hết mạng" : "Hết câu"}</span> <span class="stage">câu ${p.stage}/${p.stages} · ${esc(p.stageName)}</span>`;
-  const dots = Array.from({ length: p.stages || 15 }, (_, i) => `<i class="${i + 1 < p.stage ? "done" : i + 1 === p.stage ? "now" : ""}"></i>`).join("");
-  return `<div class="dots">${dots}</div><span class="stage">Câu ${p.stage}/${p.stages} · ${esc(p.stageName)}</span>`;
+  if (p.result === "win") return `<span class="badge win">Hạ B-52</span> <span class="stage">${fmtTime(p.sec)}</span>`;
+  if (p.result === "lose") return `<span class="badge lose">${p.stageName === "Rời trận" ? "Rời trận" : p.hp <= 0 ? "Hết mạng" : "Hết câu"}</span> <span class="stage">câu ${p.stage}/${p.stages}</span>`;
+  const pct = p.stages ? Math.round(100 * (p.stage - 1) / p.stages) : 0;
+  return `<div class="prog"><div class="bar"><i style="width:${pct}%"></i></div><span class="stage">Câu ${p.stage}/${p.stages} · ${esc(p.stageName)}</span></div>`;
+}
+function statusText(p, now) {
+  const ago = Math.round((now - p.lastSeen) / 1000);
+  if (isOn(p, now)) return "Đang chơi";
+  if (now - p.lastSeen < 15000) return "Xong lượt";
+  return ago < 3600 ? `Rời ${Math.max(1, Math.round(ago / 60))} phút trước` : "Đã rời";
 }
 
 function draw(data) {
   const now = data.now;
   const list = data.players.slice().sort((a, b) => sortKey === "best"
-    ? (b.best - a.best) || (b.score - a.score)
+    ? (Math.max(b.best, b.score) - Math.max(a.best, a.score)) || (b.score - a.score)
     : (b.score - a.score) || (b.best - a.best));
-  const live = list.filter((p) => now - p.lastSeen < 15000 && !p.result);
+  order = list.map((p) => p.id);
   $("cAll").textContent = list.length;
-  $("cLive").textContent = live.length;
+  $("cLive").textContent = list.filter((p) => isOn(p, now)).length;
   $("cWin").textContent = list.filter((p) => p.wins > 0).length;
-  $("cPlays").textContent = list.reduce((a, p) => a + (p.plays || 0), 0);
   if (!list.length) return;
   $("rows").innerHTML = list.map((p, i) => {
-    const on = now - p.lastSeen < 15000;
-    const ago = Math.round((now - p.lastSeen) / 1000);
-    return `<tr class="${i < 3 ? `top${i + 1}` : ""}">
+    const on = isOn(p, now);
+    return `<tr data-id="${esc(p.id)}" class="${i < 3 ? `top${i + 1}` : ""} ${on ? "on" : ""}">
       <td class="rank">${i + 1}</td>
       <td><div class="who"><strong>${esc(p.name)}</strong><span>đúng ${p.correct}, sai ${p.wrong}</span></div></td>
-      <td class="num">${p.plays || 1}</td>
       <td>${stageCell(p)}</td>
-      <td><div class="hpbar"><i style="width:${p.maxHp ? Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100)) : 0}%"></i></div><span class="hptext">${p.hp}/${p.maxHp}</span></td>
+      <td class="hearts">${hearts(p)}</td>
       <td class="num score">${fmt(p.score)}</td>
       <td class="num best">${p.best ? fmt(p.best) : "–"}</td>
-      <td><span class="live ${on && !p.result ? "on" : ""}"><i></i>${!on ? (ago < 3600 ? `Rời ${Math.max(1, Math.round(ago / 60))} phút trước` : "Đã rời") : p.result ? "Đã xong lượt" : "Đang chơi"}</span></td>
+      <td><span class="live ${on ? "on" : ""}"><i></i>${statusText(p, now)}</span></td>
+      <td><button class="watch" tabindex="-1">Xem</button></td>
     </tr>`;
   }).join("");
+  if (viewId) drawSide();
 }
 
-let last = null;
 async function poll() {
   try {
     const r = await fetch("api/players", { cache: "no-store" });
@@ -143,13 +207,79 @@ async function poll() {
     draw(last);
     $("err").hidden = true;
   } catch (e) {
-    $("err").textContent = "Mất kết nối tới server. Kiểm tra cửa sổ server còn chạy không.";
+    $("err").textContent = "Mất kết nối tới server, đang thử lại…";
     $("err").hidden = false;
   }
 }
 poll();
 setInterval(poll, 2000);
 
+/* ---------- Xem trực tiếp ---------- */
+let viewId = null, viewTimer = null, viewSince = 0, lastFrameT = 0;
+function player(id) { return last && last.players.find((p) => p.id === id); }
+function drawSide() {
+  const p = player(viewId); if (!p) return;
+  const now = last.now, on = isOn(p, now);
+  $("vName").textContent = p.name;
+  $("vRank").textContent = `Hạng ${order.indexOf(p.id) + 1} / ${order.length}`;
+  $("vScore").textContent = fmt(p.score);
+  $("vStage").textContent = p.result === "win" ? "Hạ B-52" : `${p.stage}/${p.stages}`;
+  $("vHp").innerHTML = hearts(p);
+  $("vCw").textContent = `${p.correct} / ${p.wrong}`;
+  $("vTime").textContent = fmtTime(p.sec || 0);
+  $("vBest").textContent = p.best ? fmt(p.best) : "–";
+  $("vPlays").textContent = p.plays || 1;
+  $("vLive").classList.toggle("off", !on);
+  $("vLive").lastChild.textContent = on ? "TRỰC TIẾP" : statusText(p, now).toUpperCase();
+}
+function openView(id) {
+  if (!player(id)) return;
+  viewId = id; viewSince = Date.now(); lastFrameT = 0;
+  $("viewer").hidden = false; $("shot").hidden = true; $("shotNote").hidden = true;
+  showMsg(`Đang kết nối tới màn hình của ${player(id).name}…`);
+  drawSide();
+  clearTimeout(viewTimer); pullFrame();
+}
+function closeView() { viewId = null; clearTimeout(viewTimer); $("viewer").hidden = true; }
+function showMsg(t) { $("shotMsg").hidden = !t; if (t) $("shotMsg").firstChild.textContent = t; }
+async function pullFrame() {
+  const id = viewId; if (!id) return;
+  const t0 = Date.now();
+  try {
+    const r = await fetch(`api/live?id=${encodeURIComponent(id)}`, { cache: "no-store" });
+    const d = await r.json();
+    if (id !== viewId) return;
+    const f = d.frame, p = player(id);
+    if (f && f.t >= viewSince - 20000 && f.t !== lastFrameT) {
+      lastFrameT = f.t; $("shot").src = f.img; $("shot").hidden = false;
+      $("shotNote").textContent = f.note || ""; $("shotNote").hidden = !f.note;
+    }
+    const stale = !f || d.now - f.t > 4000;
+    const waited = Date.now() - viewSince;
+    if (!stale) showMsg("");
+    else if (p && !isOn(p, last.now) && waited > 5000) showMsg(lastFrameT ? "Người chơi đã rời trận. Đây là hình cuối cùng." : `${p.name} hiện không ở trong trận nên không có hình.`);
+    else if (waited > 9000) showMsg("Chưa nhận được hình. Máy người chơi có thể đang mạng yếu hoặc đang ở bản cũ (tải lại trang game).");
+    else if (!lastFrameT) showMsg(`Đang kết nối tới màn hình của ${p ? p.name : "người chơi"}…`);
+  } catch (e) {}
+  if (id === viewId) viewTimer = setTimeout(pullFrame, Math.max(100, 500 - (Date.now() - t0)));
+}
+function step(d) {
+  if (!order.length || !viewId) return;
+  const i = order.indexOf(viewId);
+  openView(order[(i + d + order.length) % order.length]);
+}
+$("rows").addEventListener("click", (e) => { const tr = e.target.closest("tr[data-id]"); if (tr) openView(tr.dataset.id); });
+$("vClose").onclick = closeView;
+$("vPrev").onclick = () => step(-1);
+$("vNext").onclick = () => step(1);
+addEventListener("keydown", (e) => {
+  if (!viewId) return;
+  if (e.key === "Escape") closeView();
+  if (e.key === "ArrowLeft") step(-1);
+  if (e.key === "ArrowRight") step(1);
+});
+
+/* ---------- Sắp xếp, xóa dữ liệu ---------- */
 function setSort(k) { sortKey = k; $("sortBest").classList.toggle("on", k === "best"); $("sortNow").classList.toggle("on", k === "now"); if (last) draw(last); }
 $("sortBest").onclick = () => setSort("best");
 $("sortNow").onclick = () => setSort("now");
@@ -159,8 +289,8 @@ $("confirmYes").onclick = async () => {
   const headers = {};
   try { const k = sessionStorage.getItem("adminKey") || (needKey ? prompt("Nhập mật khẩu admin (ADMIN_KEY):") : ""); if (k) { sessionStorage.setItem("adminKey", k); headers["x-admin-key"] = k; } } catch (e) {}
   const rr = await fetch("api/reset", { method: "POST", headers }).catch(() => null);
-  if (rr && rr.status === 401) { try { sessionStorage.removeItem("adminKey"); } catch (e) {} alert("Sai mật khẩu admin."); $("confirmBox").hidden = true; $("resetBtn").hidden = false; return; }
   $("confirmBox").hidden = true; $("resetBtn").hidden = false;
+  if (rr && rr.status === 401) { try { sessionStorage.removeItem("adminKey"); } catch (e) {} alert("Sai mật khẩu admin."); return; }
   $("rows").innerHTML = '<tr><td colspan="8" class="empty">Đã xóa dữ liệu. Chờ người chơi vào.</td></tr>';
   poll();
 };

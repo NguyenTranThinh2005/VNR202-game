@@ -113,7 +113,7 @@ input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
    ===================================================================== */
 const QUESTIONS = [
   // ── Chặng 1 (1 máy bay, 4 thùng): đáp án ngắn ──
-  { q: "Đại hội đại biểu toàn quốc lần thứ V của Đảng họp vào thời gian nào?", a: ["27 – 31/3/1982", "12/1976", "12/1986", "7/1984"], correct: 0 },
+  { q: "Đại hội đại biểu toàn quốc lần thứ V của Đảng họp vào thời gian nào?", a: ["3/1982", "12/1976", "12/1986", "7/1984"], correct: 0 },
   { q: "Đại hội V của Đảng họp ở đâu?", a: ["Hà Nội", "TP Hồ Chí Minh", "Huế", "Đà Nẵng"], correct: 0 },
   { q: "Tổng Bí thư của Đảng tại thời điểm Đại hội V là ai?", a: ["Lê Duẩn", "Trường Chinh", "Nguyễn Văn Linh", "Phạm Văn Đồng"], correct: 0 },
   { q: "Đại hội V xác định ngành nào là mặt trận hàng đầu?", a: ["Nông nghiệp", "Công nghiệp nặng", "Thương nghiệp", "Giao thông"], correct: 0 },
@@ -1559,9 +1559,45 @@ function sendStatus(force) {
   const now = Date.now();
   if (!force && now - lastSent < 1000) { clearTimeout(sendTimer); sendTimer = setTimeout(() => sendStatus(true), 1000); return; }
   lastSent = now;
-  fetch("api/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(statusPayload(st)), keepalive: true }).catch(() => {});
+  fetch("api/status", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(statusPayload(st)), keepalive: true })
+    .then((r) => (r.ok && r.status === 200 ? r.json() : null)).then((d) => { if (d && d.watch) startLive(); }).catch(() => {});
 }
-setInterval(() => { if (S && !S.over) sendStatus(true); }, 4000);
+setInterval(() => { if (S && !S.over) sendStatus(true); }, 3000);
+
+/* Xem trực tiếp: khi màn admin bấm xem người chơi này, gửi ảnh chụp nhỏ của màn chơi khoảng 2 lần/giây */
+let liveOn = false;
+const liveCv = document.createElement("canvas"), liveCtx = liveCv.getContext("2d");
+function liveNote() {
+  const vis = (id) => !$(id).hidden;
+  if (vis("pickScr")) return "Đang chọn Viện trợ";
+  if (vis("leaveScr")) return "Đang tạm dừng";
+  if (vis("endScr")) return S || lastS ? `Kết thúc · ${Math.round((S || lastS).score).toLocaleString("vi-VN")} điểm` : "Kết thúc";
+  if (vis("startScr")) return "Đang ở màn hình chờ";
+  return "";
+}
+function liveShot() {
+  const sw = W * SC * DPR, sh = H * SC * DPR;
+  const tw = 460, th = Math.round(tw * H / W);
+  liveCv.width = tw; liveCv.height = th;
+  liveCtx.drawImage(cv, OX * DPR, OY * DPR, sw, sh, 0, 0, tw, th);
+  return liveCv.toDataURL("image/jpeg", 0.62);
+}
+async function startLive() {
+  if (liveOn || !SERVER_MODE) return;
+  liveOn = true;
+  try {
+    for (let miss = 0; miss < 3;) {
+      const t0 = performance.now();
+      let watch = false;
+      try {
+        const r = await fetch("api/live", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: PLAYER_ID, img: liveShot(), note: liveNote() }) });
+        watch = r.ok && (await r.json()).watch;
+      } catch (e) {}
+      miss = watch ? 0 : miss + 1;
+      await new Promise((ok) => setTimeout(ok, Math.max(120, 500 - (performance.now() - t0))));
+    }
+  } finally { liveOn = false; }
+}
 
 /* ---------------- Vòng lặp ---------------- */
 let lastT = performance.now();
