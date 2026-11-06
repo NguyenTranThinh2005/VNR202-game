@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bảng Theo Dõi · Lưới Lửa Tri Thức</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya:wght@800;900&family=Be+Vietnam+Pro:wght@400;600;800&display=swap">
+<style>
+/* Màn chiếu cho admin: tiêu đề và link vào chơi ở trên, bảng xếp hạng chiếm phần lớn màn hình */
+:root {
+  --bg: #13235A; --panel: #1D3170; --panel-2: #264088; --line: #4668BC;
+  --cinnabar: #B3261E; --gold: #D9A441; --egg: #EFE6D2; --jade: #3F7D5E; --muted: #B4C4EE; --ink: #0A1236;
+  --display: "Alegreya", Georgia, serif; --body: "Be Vietnam Pro", "Segoe UI", Roboto, Arial, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 0%, #3C62C8 0%, #25449E 35%, var(--bg) 75%); color: var(--egg); font-family: var(--body); font-size: clamp(15px, 1.25vw, 20px); padding: 20px max(16px, 2.5vw) 32px; }
+header { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px 32px; margin-bottom: 20px; }
+.eyebrow { font-size: 0.75em; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 900; font-size: clamp(32px, 3.6vw, 60px); line-height: 1; }
+.join { display: grid; gap: 2px; text-align: right; }
+.join span { font-size: 0.8em; color: var(--muted); font-weight: 600; }
+.join strong { font-family: var(--display); font-size: clamp(22px, 2.4vw, 40px); color: var(--gold); letter-spacing: 0.01em; word-break: break-all; }
+.chips { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+.chip { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.chip b { color: var(--gold); }
+.spacer { flex: 1; }
+button { font: inherit; font-size: 0.85em; font-weight: 700; color: var(--egg); background: var(--panel-2); border: 1px solid var(--line); border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+button.on { border-color: var(--gold); color: var(--gold); }
+button.danger { border-color: var(--cinnabar); }
+button:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: rgba(24, 40, 100, 0.7); }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+th { text-align: left; font-size: 0.72em; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); font-weight: 800; padding: 12px 14px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 12px 14px; border-bottom: 1px solid rgba(70, 104, 188, 0.45); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; }
+.rank { font-family: var(--display); font-weight: 900; font-size: 1.4em; color: var(--muted); width: 2.5em; }
+tr.top1 .rank { color: #F2C230; } tr.top2 .rank { color: #D8DEE4; } tr.top3 .rank { color: #C98A4E; }
+.who { display: grid; gap: 2px; }
+.who strong { font-size: 1.1em; }
+.who span { font-size: 0.8em; color: var(--muted); }
+.dots { display: flex; gap: 4px; margin-bottom: 4px; }
+.dots i { width: 8px; height: 8px; border-radius: 2px; background: var(--line); }
+.dots i.done { background: var(--gold); }
+.dots i.now { background: var(--egg); }
+.stage { font-size: 0.85em; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 8px; font-size: 0.8em; font-weight: 800; }
+.badge.win { background: var(--jade); color: #fff; }
+.badge.lose { background: var(--cinnabar); color: #fff; }
+.hpbar { width: 110px; height: 10px; border-radius: 3px; background: rgba(179, 38, 30, 0.2); overflow: hidden; border: 1px solid #000; }
+.hpbar i { display: block; height: 100%; background: var(--cinnabar); }
+.hptext { font-size: 0.75em; color: var(--muted); }
+.score { font-family: var(--display); font-weight: 900; font-size: 1.35em; }
+.best { font-family: var(--display); font-weight: 900; font-size: 1.35em; color: var(--gold); }
+.live { display: inline-flex; align-items: center; gap: 6px; font-size: 0.8em; color: var(--muted); white-space: nowrap; }
+.live i { width: 10px; height: 10px; border-radius: 50%; background: #7787B8; }
+.live.on i { background: #4CD07D; box-shadow: 0 0 8px #4CD07D; }
+.empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+.err { color: #FF8A7E; font-weight: 600; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<header>
+  <div><div class="eyebrow">Lưới Lửa Tri Thức · Màn admin</div><h1>Bảng Theo Dõi</h1></div>
+  <div class="join"><span>Vào chơi tại</span><strong id="joinUrl">đang lấy địa chỉ…</strong></div>
+</header>
+
+<div class="chips">
+  <span class="chip">Người chơi <b id="cAll">0</b></span>
+  <span class="chip">Đang chơi <b id="cLive">0</b></span>
+  <span class="chip">Hạ địch <b id="cWin">0</b></span>
+  <span class="chip">Tổng lượt chơi <b id="cPlays">0</b></span>
+  <span class="spacer"></span>
+  <span class="muted" style="font-size:.8em">Xếp theo</span>
+  <button id="sortBest" class="on">Điểm cao nhất</button>
+  <button id="sortNow">Điểm hiện tại</button>
+  <button id="resetBtn" class="danger">Xóa dữ liệu</button>
+  <span id="confirmBox" hidden><span>Xóa hết người chơi?</span> <button id="confirmYes" class="danger">Xóa</button> <button id="confirmNo">Thôi</button></span>
+</div>
+
+<div class="wrap">
+  <table>
+    <thead><tr><th>#</th><th>Người chơi</th><th class="num">Lần chơi</th><th>Đang ở</th><th>Mạng</th><th class="num">Điểm hiện tại</th><th class="num">Cao nhất</th><th>Hoạt động</th></tr></thead>
+    <tbody id="rows"><tr><td colspan="8" class="empty">Chưa có ai vào chơi. Người chơi mở địa chỉ ở góc trên, nhập tên rồi chơi.</td></tr></tbody>
+  </table>
+</div>
+<p id="err" class="err" hidden></p>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = (n) => Math.round(n || 0).toLocaleString("vi-VN");
+const fmtTime = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, "0")}`;
+let sortKey = "best";
+
+let needKey = false;
+fetch("api/info").then((r) => r.json()).then((d) => { needKey = !!d.needKey; $("joinUrl").textContent = d.urls.join("  hoặc  "); })
+  .catch(() => { $("joinUrl").textContent = location.origin; });
+
+function stageCell(p) {
+  if (p.result === "win") return `<span class="badge win">Hạ địch</span> <span class="stage">${fmtTime(p.sec)}</span>`;
+  if (p.result === "lose") return `<span class="badge lose">${p.stageName === "Rời trận" ? "Rời trận" : p.hp <= 0 ? "Hết mạng" : "Hết câu"}</span> <span class="stage">câu ${p.stage}/${p.stages} · ${esc(p.stageName)}</span>`;
+  const dots = Array.from({ length: p.stages || 15 }, (_, i) => `<i class="${i + 1 < p.stage ? "done" : i + 1 === p.stage ? "now" : ""}"></i>`).join("");
+  return `<div class="dots">${dots}</div><span class="stage">Câu ${p.stage}/${p.stages} · ${esc(p.stageName)}</span>`;
+}
+
+function draw(data) {
+  const now = data.now;
+  const list = data.players.slice().sort((a, b) => sortKey === "best"
+    ? (b.best - a.best) || (b.score - a.score)
+    : (b.score - a.score) || (b.best - a.best));
+  const live = list.filter((p) => now - p.lastSeen < 15000 && !p.result);
+  $("cAll").textContent = list.length;
+  $("cLive").textContent = live.length;
+  $("cWin").textContent = list.filter((p) => p.wins > 0).length;
+  $("cPlays").textContent = list.reduce((a, p) => a + (p.plays || 0), 0);
+  if (!list.length) return;
+  $("rows").innerHTML = list.map((p, i) => {
+    const on = now - p.lastSeen < 15000;
+    const ago = Math.round((now - p.lastSeen) / 1000);
+    return `<tr class="${i < 3 ? `top${i + 1}` : ""}">
+      <td class="rank">${i + 1}</td>
+      <td><div class="who"><strong>${esc(p.name)}</strong><span>đúng ${p.correct}, sai ${p.wrong}</span></div></td>
+      <td class="num">${p.plays || 1}</td>
+      <td>${stageCell(p)}</td>
+      <td><div class="hpbar"><i style="width:${p.maxHp ? Math.max(0, Math.min(100, (p.hp / p.maxHp) * 100)) : 0}%"></i></div><span class="hptext">${p.hp}/${p.maxHp}</span></td>
+      <td class="num score">${fmt(p.score)}</td>
+      <td class="num best">${p.best ? fmt(p.best) : "–"}</td>
+      <td><span class="live ${on && !p.result ? "on" : ""}"><i></i>${!on ? (ago < 3600 ? `Rời ${Math.max(1, Math.round(ago / 60))} phút trước` : "Đã rời") : p.result ? "Đã xong lượt" : "Đang chơi"}</span></td>
+    </tr>`;
+  }).join("");
+}
+
+let last = null;
+async function poll() {
+  try {
+    const r = await fetch("api/players", { cache: "no-store" });
+    last = await r.json();
+    draw(last);
+    $("err").hidden = true;
+  } catch (e) {
+    $("err").textContent = "Mất kết nối tới server. Kiểm tra cửa sổ server còn chạy không.";
+    $("err").hidden = false;
+  }
+}
+poll();
+setInterval(poll, 2000);
+
+function setSort(k) { sortKey = k; $("sortBest").classList.toggle("on", k === "best"); $("sortNow").classList.toggle("on", k === "now"); if (last) draw(last); }
+$("sortBest").onclick = () => setSort("best");
+$("sortNow").onclick = () => setSort("now");
+$("resetBtn").onclick = () => { $("confirmBox").hidden = false; $("resetBtn").hidden = true; };
+$("confirmNo").onclick = () => { $("confirmBox").hidden = true; $("resetBtn").hidden = false; };
+$("confirmYes").onclick = async () => {
+  const headers = {};
+  try { const k = sessionStorage.getItem("adminKey") || (needKey ? prompt("Nhập mật khẩu admin (ADMIN_KEY):") : ""); if (k) { sessionStorage.setItem("adminKey", k); headers["x-admin-key"] = k; } } catch (e) {}
+  const rr = await fetch("api/reset", { method: "POST", headers }).catch(() => null);
+  if (rr && rr.status === 401) { try { sessionStorage.removeItem("adminKey"); } catch (e) {} alert("Sai mật khẩu admin."); $("confirmBox").hidden = true; $("resetBtn").hidden = false; return; }
+  $("confirmBox").hidden = true; $("resetBtn").hidden = false;
+  $("rows").innerHTML = '<tr><td colspan="8" class="empty">Đã xóa dữ liệu. Chờ người chơi vào.</td></tr>';
+  poll();
+};
+</script>
+</body>
+</html>
