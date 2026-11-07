@@ -206,7 +206,10 @@ async function poll() {
     const r = await fetch("api/players", { cache: "no-store" });
     last = await r.json();
     draw(last);
-    $("err").hidden = true;
+    // trên web mà chưa nối Redis thì điểm chỉ lưu tạm, báo để người trình chiếu biết
+    const temp = location.protocol === "https:" && last.persistent === false;
+    $("err").textContent = temp ? "Chưa kết nối Redis: điểm chỉ lưu tạm và có thể mất." : "";
+    $("err").hidden = !temp;
   } catch (e) {
     $("err").textContent = "Mất kết nối tới server, đang thử lại…";
     $("err").hidden = false;

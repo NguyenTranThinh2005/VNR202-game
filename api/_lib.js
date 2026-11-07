@@ -1,10 +1,29 @@
 // Lưu trạng thái người chơi. Có Upstash Redis (khuyên dùng) thì dữ liệu bền và dùng chung mọi máy chủ;
 // không có thì lưu tạm trong bộ nhớ (chỉ để chạy thử, có thể mất dữ liệu).
-const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+// Hỗ trợ 2 loại: Upstash (REST: KV_REST_API_URL + TOKEN) hoặc Redis thường (REDIS_URL dạng redis://...).
+const REST = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const RURL = process.env.REDIS_URL || process.env.KV_URL ||
+  Object.entries(process.env).find(([k, v]) => /REDIS_URL$/.test(k) && /^rediss?:\/\//.test(v || ""))?.[1];
+const URL_ = REST || RURL; // có kho lưu bền hay không
 const mem = globalThis.__bbls || (globalThis.__bbls = { players: {}, frames: {}, watch: {} });
 
+// kết nối Redis thường: giữ lại giữa các lần gọi để không phải kết nối lại
+function redisClient() {
+  if (!globalThis.__bblsRedis) {
+    const { createClient } = require("redis");
+    const c = createClient({ url: RURL, socket: { connectTimeout: 5000 } });
+    c.on("error", () => {});
+    globalThis.__bblsRedis = c.connect().then(() => c).catch((e) => { globalThis.__bblsRedis = null; throw e; });
+  }
+  return globalThis.__bblsRedis;
+}
+
 async function cmd(commands) {
+  if (!REST) {
+    const c = await redisClient();
+    return Promise.all(commands.map((a) => c.sendCommand(a.map(String))));
+  }
   const r = await fetch(`${URL_}/pipeline`, {
     method: "POST",
     headers: { Authorization: `Bearer ${TOKEN}`, "Content-Type": "application/json" },
