@@ -152,7 +152,9 @@ const fmtTime = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60))
 const hearts = (p) => p.maxHp ? "♥".repeat(Math.max(0, p.hp)) + `<s>${"♥".repeat(Math.max(0, p.maxHp - Math.max(0, p.hp)))}</s>` : "–";
 let sortKey = "best", needKey = false, last = null, order = [];
 
-fetch("api/info").then((r) => r.json()).then((d) => setJoin(d.urls[0] || location.origin, !!d.needKey)).catch(() => setJoin(location.origin, false));
+// trên Vercel (https) luôn dùng chính địa chỉ trang này; chạy trên laptop thì dùng địa chỉ Wi-Fi máy chủ báo về
+const onWeb = location.protocol === "https:";
+fetch("api/info").then((r) => r.json()).then((d) => setJoin(onWeb || !d.urls[0] ? location.origin : d.urls[0], !!d.needKey)).catch(() => setJoin(location.origin, false));
 function setJoin(url, nk) {
   needKey = nk;
   $("joinUrl").textContent = url.replace(/^https?:\/\//, "");
