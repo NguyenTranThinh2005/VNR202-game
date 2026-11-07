@@ -66,7 +66,7 @@ input:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
       <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="20" r="5" fill="#E2AE45"/><path d="M13 15 L20 4" stroke="#F3EBD8" stroke-width="2" stroke-dasharray="2 3"/></svg>Kéo để ngắm, súng tự bắn</div>
       <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="4" y="6" width="18" height="15" rx="2" fill="#4FA877" stroke="#1E4D35" stroke-width="1.5"/><path d="M8 13.5l3.5 3.5L18 10" stroke="#fff" stroke-width="2.4" fill="none"/></svg>Bắn vỡ thùng đáp án đúng</div>
       <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="2" y="2" width="22" height="8" rx="2" fill="#C8352C"/><rect x="2" y="13" width="8" height="7" fill="#4A5470"/><rect x="16" y="13" width="8" height="7" fill="#4A5470"/><circle cx="13" cy="17" r="3" fill="#E2AE45"/></svg>Bắn qua khe hở vào địch</div>
-      <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="5" y="3" width="12" height="9" rx="1.5" fill="#C08A4A" stroke="#4A2E14" stroke-width="1.2"/><path d="M11 14v4M8 15l-1 3M14 15l1 3" stroke="#FF6B5E" stroke-width="1.6"/><circle cx="11" cy="22" r="3" fill="#E2AE45"/></svg>Bắn vỡ 3 thùng sai thì mất 1 mạng</div>
+      <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="5" y="3" width="12" height="9" rx="1.5" fill="#C08A4A" stroke="#4A2E14" stroke-width="1.2"/><path d="M11 14v4M8 15l-1 3M14 15l1 3" stroke="#FF6B5E" stroke-width="1.6"/><circle cx="11" cy="22" r="3" fill="#E2AE45"/></svg>Bắn vỡ 2 thùng sai thì mất 1 mạng</div>
       <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><g transform="rotate(35 16 9)"><path d="M13 3 L19 3 L18 6 L14 6 Z" fill="#2E3524"/><ellipse cx="16" cy="10" rx="3.6" ry="6" fill="#5E6B40"/><rect x="12.4" y="11.5" width="7.2" height="1.6" fill="#E2B23A"/></g><circle cx="7" cy="21" r="4" fill="#E2AE45"/><path d="M9 18 L12 15" stroke="#F3EBD8" stroke-width="2"/></svg>Bắn chặn bom của B-52</div>
       <div class="tip"><svg width="26" height="26" viewBox="0 0 26 26"><rect x="2" y="7" width="22" height="13" rx="3" fill="#FF9A3C"/><text x="13" y="17.5" font-size="10" font-weight="800" text-anchor="middle" fill="#1B0E04" font-family="sans-serif">×2</text></svg>Đúng liên tiếp: nhân điểm, nhận viện trợ</div>
     </div>
@@ -155,7 +155,7 @@ const CONFIG = {
   shieldTime: 0,          // số giây đầu mỗi câu đá chưa vỡ được (0 = bắn vỡ được ngay)
   bombSfxVolume: 0.14,    // âm lượng tiếng bom rơi (file âm thanh bạn gửi)
   woodSfxVolume: 0.22,    // âm lượng tiếng đạn trúng thùng gỗ
-  wrongPerHeart: 3,       // bắn vỡ bấy nhiêu thùng sai mới mất 1 mạng (thùng sai thứ 3 rơi đè ụ pháo)
+  wrongPerHeart: 2,       // bắn vỡ bấy nhiêu thùng sai mới mất 1 mạng (thùng sai thứ 2 rơi đè ụ pháo)
   bombHp: 2,              // số phát phải bắn trúng một quả bom mới nổ
   fireballR: 20,          // cỡ quả bom B-52 thả xuống
   fireball2From: 8,       // từ câu số này B-52 thả 2 quả bom một lần
