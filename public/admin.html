@@ -21,7 +21,7 @@ body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 50% 
 header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 32px; margin-bottom: 18px; }
 .eyebrow { font-size: 0.72em; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
 h1 { margin: 4px 0 0; font-family: var(--display); font-weight: 800; font-size: clamp(34px, 3.8vw, 68px); line-height: 1; }
-.join { display: flex; align-items: center; gap: 16px; background: rgba(28, 68, 40, 0.75); border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; }
+.join { display: flex; align-items: center; }
 .join .txt { display: grid; gap: 2px; text-align: right; }
 .join span { font-size: 0.8em; color: var(--muted); font-weight: 600; }
 .join strong { font-family: var(--display); font-size: clamp(20px, 2vw, 36px); color: var(--gold); word-break: break-all; }
@@ -100,13 +100,12 @@ tr.on .watch { border-color: var(--gold); color: var(--gold); }
 <body>
 <header>
   <div><div class="eyebrow">Lưới Lửa Tri Thức</div><h1>Bảng Xếp Hạng</h1></div>
-  <div class="join"><div class="txt"><span>Quét mã để chơi</span><strong id="joinUrl" hidden></strong></div><div id="qr"></div></div>
+  <div class="join"><strong id="joinUrl" hidden></strong><div id="qr"></div></div>
 </header>
 
 <div class="chips">
   <span class="chip">Người chơi <b id="cAll">0</b></span>
   <span class="chip">Đang chơi <b id="cLive">0</b></span>
-  <span class="chip">Hạ B-52 <b id="cWin">0</b></span>
   <span class="hint">Bấm vào một người để xem màn hình của họ</span>
   <span class="spacer"></span>
   <button id="sortBest" class="on">Điểm cao nhất</button>
@@ -182,7 +181,7 @@ function draw(data) {
   order = list.map((p) => p.id);
   $("cAll").textContent = list.length;
   $("cLive").textContent = list.filter((p) => isOn(p, now)).length;
-  $("cWin").textContent = list.filter((p) => p.wins > 0).length;
+  if ($("cWin")) $("cWin").textContent = list.filter((p) => p.wins > 0).length;
   if (!list.length) return;
   $("rows").innerHTML = list.map((p, i) => {
     const on = isOn(p, now);
