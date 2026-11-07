@@ -58,7 +58,7 @@ async function updatePlayer(b) {
     stage: num(b.stage), stages: num(b.stages), stageName: clip(b.stageName, 40),
     hp: num(b.hp), maxHp: num(b.maxHp), score: num(b.score),
     result: b.result === "win" || b.result === "lose" ? b.result : null,
-    correct: num(b.correct), wrong: num(b.wrong), sec: num(b.sec),
+    correct: num(b.correct), wrong: num(b.wrong), sec: num(b.sec), streak: num(b.streak),
     plays: p.runIds.length, lastSeen: Date.now(),
   });
   if (p.result) p.best = Math.max(p.best, p.score);
